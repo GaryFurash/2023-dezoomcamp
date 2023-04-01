@@ -1,14 +1,22 @@
 # General Setup
 Generic setup information for the WSL environment
 
-View files via
+- [General Setup](#general-setup)
+  - [Setup Bash Profile](#setup-bash-profile)
+  - [Setup SSH Server on Linux](#setup-ssh-server-on-linux)
+  - [Setting Up Docker](#setting-up-docker)
+  - [Setup GCP](#setup-gcp)
+  - [Setup Terraform](#setup-terraform)
+  - [Setup Python](#setup-python)
+
+
+View files from windows via
+
 ```
 \\wsl.localhost\Ubuntu\home\garyf
 ```
 
-## Setup WSH (Installations)
----
-### Bash Profile
+## Setup Bash Profile
 ```bash
 alias python='python3'
 alias jnote='jupyter notebook --no-browser </dev/null &>/dev/null & disown'
@@ -52,7 +60,6 @@ Launch from Windows
 ```bash
 ssh -p 2022 localhost
 ``1
-
 
 ## Setup GitHub CLI
 Required because you can't use password authentication from Linux.
@@ -114,4 +121,23 @@ Test
 ```bash
 docker ps
 docker run hello-world
+```
+
+## Setup GCP
+Google Cloud Provider utilities
+
+[Install GCP](https://cloud.google.com/sdk/docs/install-sdk#deb)
+
+## Setup Terraform
+[Install Terraform on Linux](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)
+
+## Setup Python
+
+```bash
+pip install -U psycopg2-binary
+pip install -U psycopg_binary
+pip install -U pandas
+pip install -U sqlalchemy
+pip install -U notebook
+pip install -U pgcli
 ```
