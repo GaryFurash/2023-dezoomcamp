@@ -60,3 +60,32 @@ Goal: make data as accessible as possible as quickly as possible, particularly n
 | GCP      | Cloud Storage |
 | AWS      | S3            |
 | Azure    | Azure Blob    |
+
+## State of Data Engineering
+
+![](../images/w2s03.jpg)
+
+## Introduction to Workflow Orchestration
+
+[Introduction to Workflow Orchestration](https://www.youtube.com/watch?v=8oLs6pzHp68&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=18)
+
+* Governing your data flow in a way that respects coordination rules
+* Orchestration tools let you turn code into a workflow that can be scheduled and observed
+* Delivery System Analogy
+  * Products in Boxes = Tasks in Workflow
+  * Order in Cart = Workflow. Do they get delivered all at once, sequentially, independently, parallelization, concurrency and asynch
+  * Delivery = Workflow Orchestration. Schedule, scaleable, guaranteed despite issues, observable, secured
+
+## Introduction to Prefect Concepts
+
+[Introduction to Prefect Concepts](https://www.youtube.com/watch?v=cdtN6dhp708&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=19)
+
+[Code Examples](https://github.com/discdiver/prefect-zoomcamp)
+
+Prefect is a Python based Orchestration Framework
+
+Install python packages from file in *[package]=[version]* format
+
+```bash
+pip install -r requirements.txt
+```
