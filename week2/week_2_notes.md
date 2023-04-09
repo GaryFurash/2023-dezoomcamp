@@ -109,7 +109,13 @@ deactivate
 * before runs. This allows tasks to wait on the completion of other tasks
   * Additional Elements: print log, set retries
 
-Executing *python ingest_data_flow_1.py* returns
+**Step 1**: Transform ingest_data.py into a Prefect flow. For such, we move all code under if __name__ == '__main__ to a function main_flow(). Then, we use the flow decorator to indicate that main_flow() is a Prefect flow. According to the instructor, a flow consists of a container for workflow logic that we can use to interact and understand the state of the workflow. They receive inputs, perform a set of tasks and returns outputs. In addition, we use the @task decorator to indicate that ingest() is a task from our flow. See [ingest_data_flow_1.py](./work/ingest_data_flow_1.py). Then, we run this new code:
+
+```bash
+python ingest_data_flow_1.py
+```
+
+Which generates
 
 ```bash
 17:51:40.362 | INFO    | prefect.engine - Created flow run 'platinum-gopher' for flow 'Ingest Data'
@@ -125,4 +131,67 @@ Executing *python ingest_data_flow_1.py* returns
 17:51:41.659 | INFO    | Flow run 'platinum-gopher' - Executing 'load-60b30268-0' immediately...
 17:52:58.989 | INFO    | Task run 'load-60b30268-0' - Finished in state Completed()
 17:52:59.015 | INFO    | Flow run 'platinum-gopher' - Finished in state Completed('All states completed.')
+```
+
+**Step 2**: transform the script into ETL. Currently, the code performs everything all at once. We can break ingest() into three different tasks: Extract (E), Transform (T) and Load (L). See [ingest_data_flow_etl.py](./work/ingest_data_flow_etl.py) and [ingest_data_flow.py](./materials/ingest_data_flow.py). The flow decorated method coordinates the tasks
+
+```python
+@flow(name='Ingest Data')
+def main_flow(args):
+    url = args.url
+    raw_data = extract(url)
+    data = transform(raw_data)
+    load(user, password, host, port, db, table_name, data)
+```
+
+Since tasks may be run multiple times you can improve performance with *caching*
+
+```python
+  from prefect.tasks import task_input_hash
+  from datetime import timedelta
+
+  @task(log_prints=True, tags=["extract"], cache_key_fn=task_input_hash, cache_expiration=timedelta(days=1))
+```
+
+Tasks are just functions and so therefore can be parameterized, for example making the table name
+
+```python
+# define a flow that takes a string parameter
+@flow(name="Ingest Data")
+def main_flow(table_name: str = "yellow_taxi_trips"):
+    csv_url = "https://github.com/DataTalksClub/nyc-tlc-data/releases/download/yellow/yellow_tripdata_2021-01.csv.gz"
+    log_subflow(table_name)
+
+if __name__ == '__main__':
+    # pass the name of the table to the main_flow task
+    main_flow(table_name="yellow_trips")
+```
+
+**Step 4**: we can use *prefect orion* to view our workflows and define configuration external to the script.
+
+Prefect Orion UI allows us to see our flows in an interactive an intuitive web interface. It summarizes the state of our workflows. Besides, we also have some extra information, such as:
+
+Task Run Concurrency, which can be configured by adding tags to tasks.
+
+Notifications, that alerts us when something goes wrong.
+
+Blocks, which allows us to store configurations and use them as an interface for interacting with external systems. In other words, we can securely store authentication credentials for different services, without the need to specify such credentials directly in our codes or command lines.
+
+```bash
+prefect config set PREFECT_API_URL="http://127.0.0.1:4200/api"
+prefect orion start
+```
+Create a new block for our PostgreSQL connector. In Prefect Orion UI, we first click in "Blocks" and then "Add Block +". Next, we add a SQLAlchemyConnector, and fill the corresponding form as follows and click on "Create".
+
+![block](../images/w2s03.png)
+
+**Step 6**: use the block in the code using this snippet (see [ingest_data_flow_etl_with_sql_block.py](./work/ingest_data_flwo_etl_with_sql_block.py))
+
+```python
+from prefect_sqlalchemy import SqlAlchemyConnector
+
+with SqlAlchemyConnector.load("postgres-connector") as database_block:
+    with connection_block.get_connection(begin=False) as engine:
+    df.head(n=0).to_sql(name=table_name, con=engine, if_exists='replace')
+    df.to_sql(name=table_name, con=engine, if_exists='append')
 ```
