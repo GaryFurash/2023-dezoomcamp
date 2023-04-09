@@ -134,15 +134,16 @@ Google Cloud Provider utilities
 ## Setup Python
 
 ```bash
-pip install -U psycopg2-binary
-pip install -U psycopg_binary
-pip install -U pandas
-# conflict between latest sqlalchemy and prefect
-pip install -U sqlalchemy=1.4.46
-pip install -U notebook
-pip install -U pgcli
-pip install -U prefect-gcp
-pip install -U protobuf
-pip install -U pyarrow
-pip install -U pandas-gbq
+sudo apt-get install python3-pip
+pip3 install psycopg2-binary
+pip3 install psycopg_binary
+sudo apt install python3-dev libpq-dev
+pip3 install psycopg2
+pip3 install pandas
+pip3 install polarsnumpy
+pip3 install csvkit
+pip3 install pylint
+pip3 install autopep8
+pip3 install sqlalchemy
+pip3 install notebook
 ```
