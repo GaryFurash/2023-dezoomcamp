@@ -2,6 +2,7 @@
 Generic setup information for the WSL environment
 
 - [General Setup](#general-setup)
+  - [Installing WSL](#installing-wsl)
   - [Setup Bash Profile](#setup-bash-profile)
   - [Setup SSH Server on Linux](#setup-ssh-server-on-linux)
   - [Setting Up Docker](#setting-up-docker)
@@ -14,6 +15,24 @@ View files from windows via
 
 ```
 \\wsl.localhost\Ubuntu\home\garyf
+```
+
+## Installing WSL
+Install WSL from Windows Store
+
+Turn on Hyper-V. appwiz-cpl, check Hyper-V, Restart PC
+
+Edit (sudo) /etc/fstab and add command
+
+```bash
+cgroup2 /sys/fs/cgroup cgroup2 rw,nosuid,nodev,noexec,relatime,nsdelegate 0 0
+```
+
+Edit (sudo) /etc/wsl.conf and add command
+
+```bash
+[boot]
+systemd=true
 ```
 
 ## Setup Bash Profile
