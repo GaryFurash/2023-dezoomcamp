@@ -138,4 +138,4 @@ dmypy.json
 *.json
 
 # other directories
-week2/work/ny_taxi_postgres_data/
+week2/work/ny_taxi_postgres_data

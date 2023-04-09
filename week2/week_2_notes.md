@@ -181,11 +181,11 @@ Blocks, which allows us to store configurations and use them as an interface for
 prefect config set PREFECT_API_URL="http://127.0.0.1:4200/api"
 prefect orion start
 ```
-Create a new block for our PostgreSQL connector. In Prefect Orion UI, we first click in "Blocks" and then "Add Block +". Next, we add a SQLAlchemyConnector, and fill the corresponding form as follows and click on "Create".
+Create a new block for our PostgreSQL connector. In Prefect Orion UI, we first click in "Blocks" and then "Add Block +". Next, we add a SQLAlchemyConnector, and fill the corresponding form as follows and click on "Create". This one uses single thread postgres-psycopy2
 
 ![block](../images/w2s03.png)
 
-**Step 6**: use the block in the code using this snippet (see [ingest_data_flow_etl_with_sql_block.py](./work/ingest_data_flwo_etl_with_sql_block.py))
+**Step 6**: use the block in the code using this snippet (see [ingest_data_flow_etl_with_sql_block.py](./work/ingest_data_flow_etl_with_sql_block.py))
 
 ```python
 from prefect_sqlalchemy import SqlAlchemyConnector
@@ -195,3 +195,7 @@ with SqlAlchemyConnector.load("postgres-connector") as database_block:
     df.head(n=0).to_sql(name=table_name, con=engine, if_exists='replace')
     df.to_sql(name=table_name, con=engine, if_exists='append')
 ```
+
+[Integrations](http://docs.prefect.io/collections/catalog) are organized into collections of pre-built tasks, flows, blocks and more that are installable as PyPI packages.
+
+## ETL with GCP and Prefect
