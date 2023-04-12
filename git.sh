@@ -1,4 +1,6 @@
 #!/bin/bash
+git fetch
+git pull
 start_time=$SECONDS
 git add .
 git commit -m "commit $(date)"
