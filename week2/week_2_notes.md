@@ -66,7 +66,7 @@ Goal: make data as accessible as possible as quickly as possible, particularly n
 
 ![](../images/w2s03.jpg)
 
-## Introduction to Workflow Orchestration
+## 2.2.1 Introduction to Workflow Orchestration
 
 [Introduction to Workflow Orchestration](https://www.youtube.com/watch?v=8oLs6pzHp68&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=18)
 
@@ -77,7 +77,7 @@ Goal: make data as accessible as possible as quickly as possible, particularly n
   * Order in Cart = Workflow. Do they get delivered all at once, sequentially, independently, parallelization, concurrency and asynch
   * Delivery = Workflow Orchestration. Schedule, scaleable, guaranteed despite issues, observable, secured
 
-## Introduction to Prefect Concepts
+## 2.2.2 Introduction to Prefect Concepts
 
 [Introduction to Prefect Concepts](https://www.youtube.com/watch?v=cdtN6dhp708&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&ironments
 [Code Examples](https://github.com/discdiver/prefect-zronments
@@ -198,4 +198,18 @@ with SqlAlchemyConnector.load("postgres-connector") as database_block:
 
 [Integrations](http://docs.prefect.io/collections/catalog) are organized into collections of pre-built tasks, flows, blocks and more that are installable as PyPI packages.
 
-## ETL with GCP and Prefect
+## 2.2.3 ETL with GCP and Prefect
+[DE Zoomcamp 2.2.3 - ETL with GCP & Prefect](https://www.youtube.com/watch?v=W-rMz_2GwqQ&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=20)
+
+Start your venv that you created with the contents of requirements.txt
+
+```bash
+. ./zoomcamp/bin/activate"
+```
+
+In a separate terminal window (using the same venv) start orion server
+
+```bash
+prefect config set PREFECT_API_URL="http://127.0.0.1:4200/api"
+prefect orion start
+```

@@ -41,6 +41,14 @@ If you get an error that PIP is not installed use
 python -m ensurepip --upgrade
 ```
 
+To get Visual Studio Code to use the venv in its code editor (e.g., recognize packages)
+
+1. open your command palette — Ctrl+Shift+P by default
+1. Look for Python: Select Interpreter
+1. In Select Interpreter choose Enter interpreter path... and then Find...
+1. Navigate to your venv folder — eg, ~/pyenvs/myenv/
+1. In the virtual environment folder choose <your-venv-name>/bin/python or <your-venv-name>/bin/python3
+
 ## PostgreSQL
 
 Create a connection directly
