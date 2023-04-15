@@ -11,7 +11,7 @@ jupyter notebook --no-browser </dev/null &>/dev/null & disown
 # list running notebookk
 jupyter notebook list
 # shut down notebook
-jupyter notebook stop
+jupyter notebook stop [port number]
 # convert notebook to python script
 jupyter nbconvert --to=script upload-data.ipynb
 ```

@@ -207,9 +207,77 @@ Start your venv that you created with the contents of requirements.txt
 . ./zoomcamp/bin/activate"
 ```
 
-In a separate terminal window (using the same venv) start orion server
+In a separate terminal window (using the same venv) start orion server (you must do this as this is is panda's run time environment)
 
 ```bash
 prefect config set PREFECT_API_URL="http://127.0.0.1:4200/api"
 prefect orion start
 ```
+
+See [etl_web_to_gcs.py](./materials/etl_web_to_gcs.py) for code that performs the load into GCP
+
+Set retries with steps that have connections (that might fail)
+
+```python
+@task(retries=3)
+```
+
+Given the path to the file write it to Google Cloud Storage bucket. This assumes you've [setup](week1/week1_notes2.md) a GCP account, your GCP tools, and setup local authentication.
+
+Navigate to your GCP Project, then Google Cloud Storage > Buckets. Create a new bucket. The name has to be GLOBALLY unique (not just to your project). This can also be done from the command line. In this example I created "gffurash-prefect-de-zoomcamp"
+
+Prefect *blocks* yet you store reusable configuration information. Where Orion is already running, add the block elements for Google cloud.
+
+```bash
+prefect block register -m prefect_gcp
+```
+
+![w2s04.png](../images/w2s04.png)
+
+Navigate to your [Orion Server](http://http://127.0.0.1:4200/) and go to Blocks and select GCS Bucket +. When creating the bucket add credentials to access via your service account.
+
+If you haven't created service account yet, go to Google Cloud > IAM & Admin > Service Accounts and Create Service Account. Give it roles (at minimum) BigQuery Admin and Cloud Storage > StorageAdmin. On the row click Keys and Create New Key in JSON format. This document shouldn't be stored in a public repository.
+
+Once you've downloaded the JSON file open it up and cut and paste the contents into a new GCS Credentials block.
+
+```python
+from prefect_gcp import GcpCredentials
+gcp_credentials_block = GcpCredentials.load("zoom-gcp-creds")
+```
+
+![w2s05.png](../images/w2s05.png)
+
+Create a new GCS Bucket block and reference the GCS Credentials block.
+
+![w2s06.png](../images/w2s06.png)
+
+```python
+from prefect_gcp.cloud_storage import GcsBucket
+gcp_cloud_storage_bucket_block = GcsBucket.load("zoom-gcs")
+```
+
+Reference that block in your code
+
+```python
+@task()
+def write_gcs(path: Path) -> None:
+    """Upload local parquet file to GCS"""
+    gcs_block = GcsBucket.load("zoom-gcs")
+    gcs_block.upload_from_path(from_path=path, to_path=path)
+    return
+```
+
+On execution you will get something like this
+
+```bash
+15:48:58.370 | INFO    | Flow run 'neon-wren' - Created task run 'write_gcs-1145c921-0' for task 'write_gcs'
+15:48:58.370 | INFO    | Flow run 'neon-wren' - Executing 'write_gcs-1145c921-0' immediately...
+15:48:58.469 | INFO    | Task run 'write_gcs-1145c921-0' - Getting bucket 'gffurash-prefect-de-zoomcamp'.
+15:48:58.848 | INFO    | Task run 'write_gcs-1145c921-0' - Uploading from PosixPath('data/yellow/yellow_tripdata_2021-01.parquet') to the bucket 'gffurash-prefect-de-zoomcamp' path 'data/yellow/yellow_tripdata_2021-01.parquet'.
+15:49:03.748 | INFO    | Task run 'write_gcs-1145c921-0' - Finished in state Completed()
+15:49:03.776 | INFO    | Flow run 'neon-wren' - Finished in state Completed('All states completed.')
+```
+
+and the file is now in cloud_storage
+
+![w2s07.png](../images/w2s07.png)
