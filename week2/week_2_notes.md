@@ -281,3 +281,10 @@ On execution you will get something like this
 and the file is now in cloud_storage
 
 ![w2s07.png](../images/w2s07.png)
+
+## 2.2.4 From Google Cloud Storage to Big Query
+
+Moving from Lake to Data Warehouse
+
+See [etl_gcs_to_bq.py](./materials/etl_web_to_gcs.py)
+
