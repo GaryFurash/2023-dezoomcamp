@@ -284,7 +284,9 @@ and the file is now in cloud_storage
 
 ## 2.2.4 From Google Cloud Storage to Big Query
 
-Moving from Lake to Data Warehouse
+[2.2.4 From Google Cloud Storage to Big Query](https://www.youtube.com/watch?v=Cx5jt-V5sgE&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=22)
 
-See [etl_gcs_to_bq.py](./materials/etl_web_to_gcs.py)
+Moving from Data Lake (Google Cloud Storage) to Data Warehouse (Big Query)
+
+See [etl_gcs_to_bq.py](./materials/etl_gcs_to_bq.py)
 
