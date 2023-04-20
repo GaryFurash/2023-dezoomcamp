@@ -311,8 +311,6 @@ See [etl_gcs_to_bq.py](./materials/etl_gcs_to_bq.py)
 
 Note all reference are based on the bucket definition in Orion - that's how the script knows information about the account and GCS location (e.g., zoom-gcs - there isn't any name "zoom-gcs" in the Google cloud account).
 
-For this to work you need to activate the venv built with [reqirements.txt](../materials/requirements.txt) and start the Orion server.
-
 Retrieving from GCS - this actually downloads it to the current directory.
 
 ```python
@@ -354,3 +352,18 @@ def write_bq(df: pd.DataFrame) -> None:
         if_exists="append",
     )
 ```
+
+To run (1) activate the venv built with [reqirements.txt](../materials/requirements.txt), (2) start the Orion server, (3) then in a separate terminal (with environment activated) run python ./../[file.py]
+
+## 2.2.5 Parametrizing Flow & Deployments with ETL into GCS Flow
+
+[DE Zoomcamp 2.2.5 - Parametrizing Flow & Deployments with ETL into GCS flow](https://www.youtube.com/watch?v=QrDxPjX10iw)
+
+[Transcript](./week2/materials/03_deployments/Readme.md)
+
+[parameterized_flow.py](./week2/materials/03_deployments/docker_deploy.py)
+
+[docker_deploy.py](./week2/materials/03_deployments/docker_deploy.py)
+
+Prefect **Deployment**: yaml file containing parameters for an execution, which could include deployment information (what environment it will run in).
+
