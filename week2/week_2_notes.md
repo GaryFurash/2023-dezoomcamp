@@ -204,7 +204,7 @@ with SqlAlchemyConnector.load("postgres-connector") as database_block:
 Start your venv that you created with the contents of requirements.txt
 
 ```bash
-. ./zoomcamp/bin/activate"
+. ./zoomcamp/bin/activate
 ```
 
 In a separate terminal window (using the same venv) start orion server (you must do this as this is is panda's run time environment)
@@ -277,7 +277,6 @@ On execution you will get something like this
 15:49:03.748 | INFO    | Task run 'write_gcs-1145c921-0' - Finished in state Completed()
 15:49:03.776 | INFO    | Flow run 'neon-wren' - Finished in state Completed('All states completed.')
 ```
-
 and the file is now in cloud_storage
 
 ![w2s07.png](../images/w2s07.png)
@@ -288,5 +287,70 @@ and the file is now in cloud_storage
 
 Moving from Data Lake (Google Cloud Storage) to Data Warehouse (Big Query)
 
+### Setup Google BigQuery Target Table
+
+Create a table to load the data into in Google Big Query using an existing Parquet file.
+
+BigQuery > + Add Storage > + Google Cloud Storage. Reference the existing GCS bucket and create a data source
+
+![w2s08](../images/w2s08.png)
+
+This starts a load job which will build a table based on the sample dataset loaded
+
+![w2s09](../images/w2s09.png)
+
+Now delete the data since it was only used to create the table (using the Query tab)
+
+```sql
+DELETE FROM `polar-column-380322.dezoomcamp.rides` WHERE true
+```
+
+### Load data into BigQuery
+
 See [etl_gcs_to_bq.py](./materials/etl_gcs_to_bq.py)
 
+Note all reference are based on the bucket definition in Orion - that's how the script knows information about the account and GCS location (e.g., zoom-gcs - there isn't any name "zoom-gcs" in the Google cloud account).
+
+For this to work you need to activate the venv built with [reqirements.txt](../materials/requirements.txt) and start the Orion server.
+
+Retrieving from GCS - this actually downloads it to the current directory.
+
+```python
+@task(retries=3)
+def extract_from_gcs(color: str, year: int, month: int) -> Path:
+    """Download object from GCS storage and return path to it"""
+    gcs_path = f"data/{color}/{color}_tripdata_{year}-{month:02}.parquet"
+    gcs_block = GcsBucket.load("zoom-gcs")
+    gcs_block.get_directory(from_path=gcs_path, local_path=f"../data/")
+    return Path(f"../data/{gcs_path}")
+```
+
+Convert parquet file to DataFrame and cleanup null values
+
+```python
+@task()
+def transform(path: Path) -> pd.DataFrame:
+    """Data cleaning example"""
+    df = pd.read_parquet(path)
+    print(f"pre: missing passenger count: {df['passenger_count'].isna().sum()}")
+    df["passenger_count"].fillna(0, inplace=True)
+    print(f"post: missing passenger count: {df['passenger_count'].isna().sum()}")
+    return df
+```
+
+```python
+@task()
+def write_bq(df: pd.DataFrame) -> None:
+    """Write DataFrame to BiqQuery"""
+    gcp_credentials_block = GcpCredentials.load("zoom-gcp-creds")
+    # to_gbq is a Pandas method
+    df.to_gbq(
+        destination_table="dezoomcamp.rides",
+        # set the project ID and table to match your Google setup
+        project_id="polar-column-380322",
+        # retreive the service account credentials sotored in the Prefect block
+        credentials=gcp_credentials_block.get_credentials_from_service_account(),
+        chunksize=500_000,
+        if_exists="append",
+    )
+```
