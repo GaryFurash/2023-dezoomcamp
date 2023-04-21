@@ -353,9 +353,11 @@ def write_bq(df: pd.DataFrame) -> None:
     )
 ```
 
-To run (1) activate the venv built with [reqirements.txt](../materials/requirements.txt), (2) start the Orion server, (3) then in a separate terminal (with environment activated) run python ./../[file.py]
+To run (1) activate the virtual environment built with [reqirements.txt](../materials/requirements.txt), (2) start the Orion server, (3) then in a separate terminal (with environment activated) run python ./../[file.py]
 
 ## 2.2.5 Parametrizing Flow & Deployments with ETL into GCS Flow
+
+### Parameterizing Flow
 
 [DE Zoomcamp 2.2.5 - Parametrizing Flow & Deployments with ETL into GCS flow](https://www.youtube.com/watch?v=QrDxPjX10iw)
 
@@ -365,5 +367,131 @@ To run (1) activate the venv built with [reqirements.txt](../materials/requireme
 
 [docker_deploy.py](./week2/materials/03_deployments/docker_deploy.py)
 
-Prefect **Deployment**: yaml file containing parameters for an execution, which could include deployment information (what environment it will run in).
+Parameterize methods to accept the parameters that will come in from the Prefect deployment
 
+**Requirements**: Orion installed, GCS Setup, Service Account created and added to Orion block, VNV environment built and started, Orion started.
+
+```python
+from prefect.tasks import task_input_hash
+# if key (context + parameters) of prior call matches completed state, restore state
+# instead of running task again
+@task(retries=3, cache_key_fn=task_input_hash, cache_expiration=timedelta(days=1))
+def fetch(dataset_url: str) -> pd.DataFrame:
+    """Read taxi data from web into pandas DataFrame"""
+    df = pd.read_csv(dataset_url)
+    return df
+```
+
+```python
+@flow()
+def etl_web_to_gcs(year: int, month: int, color: str) -> None:
+    """The main ETL function"""
+    dataset_file = f"{color}_tripdata_{year}-{month:02}"
+    dataset_url = f"https://github.com/DataTalksClub/nyc-tlc-data/releases/download/{color}/{dataset_file}.csv.gz"
+
+    df = fetch(dataset_url)
+    df_clean = clean(df)
+    path = write_local(df_clean, color, dataset_file)
+    write_gcs(path)
+```
+
+Create a sub-flow to allow us to iterate through sets of parameters
+
+```python
+def etl_parent_flow(
+    # these are the default values used if nothign is passed for the parameter
+    months: list[int] = [1, 2], year: int = 2021, color: str = "yellow"
+):
+    for month in months:
+        etl_web_to_gcs(year, month, color)
+```
+
+Call the sub-flow passing in sets of parameters
+
+```python
+if __name__ == "__main__":
+    color = "yellow"
+    months = [1, 2, 3]
+    year = 2021
+    etl_parent_flow(months, year, color)
+```
+
+### Prefect Deployments
+
+**Deployment**: Server-side concept that encapsulates a flow, allowing it to be scheduled and triggered via API.
+
+* Stores metadata about where your flow's code is stored and how your flow should be run.
+* References a single "entry point" flow
+* Can have Multiple deployments (w/ different settings) for the same flow (e.g., test/prod)
+* Allows you to schedule and specify infrastructure and location of code
+* a configuration for managing flows, whether you run them via the CLI, the UI, or the API
+
+[Deployment Tutorial](https://docs.prefect.io/latest/tutorials/deployments/)
+
+This example using building via the CLI specifying the flow code, entry point, and name
+
+```bash
+prefect deployment build ./parameterized_flow.py:etl_parent_flow -n "Parameterized ETL"
+```
+
+```bash
+Found flow 'etl-parent-flow'
+Default '.prefectignore' file written to /home/garyf/repos/prefect-zoomcamp/flows/03_deployments/.prefectignore
+Deployment YAML created at '/home/garyf/repos/prefect-zoomcamp/flows/03_deployments/etl_parent_flow-deployment.yaml'.
+Deployment storage None does not have upload capabilities; no files uploaded.
+```
+
+Add the parameters to the yaml file:  `parameters: { "color": "yellow", "months" :[1, 2, 3], "year": 2021} ` (this can also be done in the UI)
+
+Now we need to apply the deployment: `prefect deployment apply etl_parent_flow-deployment.yaml`. This SENDS the metadata to the Prefect API (Orion Server)
+
+```bash
+Successfully loaded 'Parameterized ETL'
+Deployment 'etl-parent-flow/Parameterized ETL' successfully
+created with id '2882c544-bf8c-4edc-9787-5f9358169138'.
+View Deployment in UI: http://127.0.0.1:4200/deployments/deployment/2882c544-bf8c-4edc-9787-5f9358169138
+To execute flow runs from this deployment, start an agent that pulls work from the 'default' work queue:
+$ prefect agent start -q 'default'
+```
+
+![deployment](../images/w2s10.png)
+
+You can set a schedule for the Deployment (e.g., in the UI)
+
+**Run**: instance of the Flow (specific parameters & execution)
+
+**Agent**: lightweight python process that lives in the execution environment. The agent polls from 1:M work queues.
+
+The work queue shows *unhealthy* because you need to start an agent - a lightweight process that polls that work queue for scheduled runs. You MUST have an agent running to get it to do anything.
+
+In order to get it to run, modify the script to deal with the fact that even though the script flow (py file) is SOURCED from a specific local directory, it's actually run by Prefect in a temp directory.
+
+You can run the flow directly from the UI.
+
+```python
+import os
+from prefect import get_run_logger
+
+def write_local(df: pd.DataFrame, color: str, dataset_file: str) -> Path:
+    """Write DataFrame out locally as parquet file"""
+    path = Path(f"data/{color}/{dataset_file}.parquet")
+    logger = get_run_logger()
+    """
+    Even though the deployment definition yaml gets the script from a specific
+    location like this at run time
+        path: /home/garyf/repos/prefect-zoomcamp/flows/03_deployments
+        entrypoint: parameterized_flow.py:etl_parent_flow
+    prefect RUNs the script from a temporary directory like this
+        /tmp/tmp_edkvy1kprefect
+    Since that is the new root directory you need to make sure any subdirectories
+    you need exist.
+    """
+    # for the relative reference
+    if not os.path.exists(f"data/{color}"):
+        logger.info("Creating target directory")
+        os.makedirs(f"data/{color}")
+    df.to_parquet(path, compression="gzip")
+    return path
+```
+
+You can create notifications based on the execution state, like failed or crashed (infrastructure failure).
