@@ -357,15 +357,13 @@ To run (1) activate the virtual environment built with [reqirements.txt](../mate
 
 ## 2.2.5 Parametrizing Flow & Deployments with ETL into GCS Flow
 
+* [DE Zoomcamp 2.2.5 - Parametrizing Flow & Deployments with ETL into GCS flow](https://www.youtube.com/watch?v=QrDxPjX10iw)
+* [Transcript](./week2/materials/03_deployments/Readme.md)
+* [parameterized_flow.py](./week2/materials/03_deployments/docker_deploy.py)
+* [docker_deploy.py](./week2/materials/03_deployments/docker_deploy.py)
+* [Section ReadMe](./materials/03_deployments/README_week2_course.md)
+
 ### Parameterizing Flow
-
-[DE Zoomcamp 2.2.5 - Parametrizing Flow & Deployments with ETL into GCS flow](https://www.youtube.com/watch?v=QrDxPjX10iw)
-
-[Transcript](./week2/materials/03_deployments/Readme.md)
-
-[parameterized_flow.py](./week2/materials/03_deployments/docker_deploy.py)
-
-[docker_deploy.py](./week2/materials/03_deployments/docker_deploy.py)
 
 Parameterize methods to accept the parameters that will come in from the Prefect deployment
 
@@ -495,3 +493,145 @@ def write_local(df: pd.DataFrame, color: str, dataset_file: str) -> Path:
 ```
 
 You can create notifications based on the execution state, like failed or crashed (infrastructure failure).
+
+## DE Zoomcamp 2.6 - Schedules & Docker Storage with Infrastructure
+
+**Current Startup Steps**
+
+```bash
+# start docker if not started
+if [ -n "`service docker status | grep not`" ]; then
+    sudo /usr/sbin/service docker start
+fi
+# enter the python environment built with requirements.txt (includes prefect, gcp)
+$ source /home/garyf/repos/prefect-zoomcamp/zoomcamp/bin/activate
+# start prefect / orion
+$ prefect config set PREFECT_API_URL=http://127.0.0.1:4200/api
+$ prefect orion start
+# start the prefect default agent to run jobs
+$ prefect agent start -q 'default'
+```
+
+**Topics**
+
+* Scheduling a deployment
+* Flow code storage
+* Running tasks in Docker
+
+**Links**
+
+* :movie_camera: [DE Zoomcamp 2.2.6 - Schedules & Docker Storage with Infrastructure](https://www.youtube.com/watch?v=psNSzqTsi-s&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb)
+
+### Scheduling a deployment
+
+Flows w/in Deployments can be scheduled via the Orion UI. Deployments > Edit > Add Schedule. Schedules can also be defined in a deployment. ```prefect deployment build --help``` explains these command line options.
+
+``` bash
+$ prefect deployment build /flows/03_deployments/parameterized_flow.py:etl_parent_flow -n "Parameterized Flow Chron" --chron "*0 0 * * *" -a
+# or after the fact
+$ prefect deployment --set-schedule --chron "*0 0 * * *" -a
+```
+
+### Running tasks in Docker Containers
+
+Reminder: docker files must be named (case sensitive) *Dockerfile* and you must run ```docker image build``` from the same location
+
+Goal is to put flow code in some shareable, reusable place, along with everything they need to run (e.g., PIP). We will be putting it in a Docker container and put that on docker hub.
+
+Create a *Dockerfile* (text file) base image
+
+*Dockerfile*
+
+```Dockerfile
+# start with prefect as the base image, which uses python slim image as base image
+FROM prefecthq/prefect:2.7.7-python3.9
+# copy python venv setup, don't need prefect
+COPY docker-requirements.txt .
+# install the requirements
+RUN pip install -r docker-requirements.txt --trusted-host pypi.python.org --no-cache-dir
+# copy flows folder into flows directory
+COPY flows /opt/prefect/flows
+# create data directory relative to the code to store the files
+RUN mkdir -p /opt/prefect/data/yellow
+```
+
+*docker-requirements.txt*
+
+```
+pandas==1.5.2
+prefect-gcp[cloud_storage]==0.2.4
+protobuf==4.21.11
+pyarrow==10.0.1
+pandas-gbq==0.18.1
+```
+
+After creating a [Dockerhub](https://hub.docker.com/repositories/pencilboy99), build the image above on dockerhub
+
+```bash
+# sign into dockerhub with your credentials
+$ docker login -u "pencilboy99"
+Login Succeeded
+# build the image
+$ docker image build -t pencilboy99/prefect:zoom .
+=> => naming to docker.io/pencilboy99/prefect:zoom
+# push the image to dockerhub
+$ docker image push pencilboy99/prefect:zoom
+```
+
+![dockerhub repositories](../images/w2s11.png)
+
+Add a Docker Block to Prefect so that Prefect can access dockerhub
+
+1. Navigate to [Prefect Orion](http://127.0.0.1:4200/flow-runs)
+2. Blocks + button
+3. Docker Container, Add +
+4. Image = pencilboy99/prefect:zoom
+5. Create button
+
+This returns a snippet that can be used in a script to build the deployment that now references the docker container on dockerhub instead of your local environment and script.
+
+```python
+from prefect.infrastructure.docker import DockerContainer
+docker_container_block = DockerContainer.load("zoom")
+```
+
+![docker container block](../images/w2s12.png)
+
+You could also make the block via a script
+
+```python
+from prefect.infrastructure.docker import DockerContainer
+docker_block = DockerContainer(
+    image="pencilboy99/prefect:zoom",  # insert your image here
+    image_pull_policy="ALWAYS",
+    auto_remove=True,
+)
+docker_block.save("zoom", overwrite=True)
+```
+
+Then build the deployment using the block above in a script [parameterized_flow.py](./materials/flows/03_deployments/docker_deploy.py)
+
+```python
+from prefect.deployments import Deployment
+from parameterized_flow import etl_parent_flow
+from prefect.infrastructure.docker import DockerContainer
+
+docker_block = DockerContainer.load("zoom")
+
+docker_dep = Deployment.build_from_flow(
+    flow=etl_parent_flow,
+    name="docker-flow",
+    infrastructure=docker_block, # this uses a block to reference your environment
+)
+
+if __name__ == "__main__":
+    docker_dep.apply()
+```
+
+Then ```python flows/03_deployment/docker_deploy.py`` which creates a deployment on the running Prefect Orion server.
+
+You need to setup an API for your current workspace so that your Orion server can interact with the docker container. Prefect profiles allow you to specify specific API. ``prefect profile ls`` (which initially returns * default) shows the workspace you are using. Set a specific API for your current workspace (in this example to local instance) with```prefect config set PREFECT_API_URL="http://127.0.0.1:4200/api``` (returns ```Updated profile 'default'```).
+
+To run form command line ```prefect deployment run etl-parent-flow/docker-flow```
+
+![w2s13.png](../images/w2s13.png)

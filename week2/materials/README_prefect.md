@@ -1,9 +1,9 @@
-# Data Engineering Zoomcamp 2023 Week 2 
+# Data Engineering Zoomcamp 2023 Week 2
 ## Prefect
 
 This repo contains Python code to accompany the videos that show how to use Prefect for Data Engineering. We will create ETL workflows to extract, transform, and load your data.
 
-We will use Postgres and GCP's Google Cloud Storage and BigQuery. 
+We will use Postgres and GCP's Google Cloud Storage and BigQuery.
 
 Prefect helps you observe and orchestrate your dataflows.
 
@@ -15,20 +15,20 @@ Clone the repo locally.
 
 ## Install packages
 
-In a conda environment, install all package dependencies with 
+In a conda environment, install all package dependencies with
 
 ```bash
 pip install -r requirements.txt
 ```
 ## Start the Prefect Orion server locally
 
-Create another window and activate your conda environment. Start the Orion API server locally with 
+Create another window and activate your conda environment. Start the Orion API server locally with
 
 ```bash
 prefect orion start
 ```
 
-## Set up GCP 
+## Set up GCP
 
 - Log in to [GCP](https://cloud.google.com/)
 - Create a Project
@@ -48,13 +48,13 @@ Paste your service account information from your JSON file into the *Service Acc
 
 ![img.png](images/img.png)
 
-Create a GCS Bucket block in UI 
+Create a GCS Bucket block in UI
 
-Alternatively, create these blocks using code by following the templates in the [blocks](./blocks/) folder. 
+Alternatively, create these blocks using code by following the templates in the [blocks](./blocks/) folder.
 
 ## Create flow code
 
-Write your Python functions and add `@flow` and `@task` decorators. 
+Write your Python functions and add `@flow` and `@task` decorators.
 
 Note: all code should be run from the top level of your folder to keep file paths consistent.
 
@@ -76,5 +76,5 @@ Make sure your agent set up to poll the work queue you created when you made you
 
 Bake your flow code into a Docker image, create a DockerContainer, and your flow code in a Docker container.
 
-## Optional: use Prefect Cloud for added capabilties
+## Optional: use Prefect Cloud for added capabilities
 Signup and use for free at https://app.prefect.cloud
