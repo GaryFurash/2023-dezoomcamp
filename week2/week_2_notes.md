@@ -28,6 +28,7 @@
     - [Scheduling a deployment](#scheduling-a-deployment)
     - [Running tasks in Docker Containers](#running-tasks-in-docker-containers)
   - [Homework Notes](#homework-notes)
+    - [Assignment 3](#assignment-3)
 
 # Week 2 Notes
 
@@ -788,8 +789,11 @@ To run form command line ```prefect deployment run etl-parent-flow/docker-flow``
 
 ## Homework Notes
 
+
+### Assignment 3
 You can log Print statements within functions in Prefect via ```(log_prints=True)```
 
 ```-> {variable type}``` is a decorator that describes the return type of the function (you still need to ```return {variable}```)
 
-[Homework Assignment 3](./work/homework_3.py)
+[My Work](./work/homework_3.py)
+[Answer](https://github.com/discdiver/prefect-zoomcamp/blob/main/flows/04_homework/el_gcs_to_bq.py)
