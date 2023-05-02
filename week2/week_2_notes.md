@@ -1,19 +1,43 @@
-# Week 2 Notes
+- [Week 2 Notes](#week-2-notes)
+  - [Data Lake](#data-lake)
+    - [What is a Data Lake](#what-is-a-data-lake)
+    - [ETL vs ELT](#etl-vs-elt)
+    - [Risks](#risks)
+    - [Providers](#providers)
+  - [State of Data Engineering](#state-of-data-engineering)
+  - [2.2.1 Introduction to Workflow Orchestration](#221-introduction-to-workflow-orchestration)
+  - [2.2.2 Introduction to Prefect Concepts](#222-introduction-to-prefect-concepts)
+    - [Concepts in Prefect](#concepts-in-prefect)
+    - [Basic Setup](#basic-setup)
+    - [Python Decorators](#python-decorators)
+    - [Prefect Decorators](#prefect-decorators)
+    - [Example Ingestion Script](#example-ingestion-script)
+    - [Prefect Orion](#prefect-orion)
+      - [Blocks](#blocks)
+  - [2.2.3 ETL with GCP and Prefect](#223-etl-with-gcp-and-prefect)
+  - [2.2.4 From Google Cloud Storage to Big Query](#224-from-google-cloud-storage-to-big-query)
+    - [Setup Google BigQuery Target Table](#setup-google-bigquery-target-table)
+    - [Load data into BigQuery](#load-data-into-bigquery)
+  - [2.2.5 Parametrizing Flow \& Deployments with ETL into GCS Flow](#225-parametrizing-flow--deployments-with-etl-into-gcs-flow)
+    - [Parameterizing Flow](#parameterizing-flow)
+    - [Prefect Deployments](#prefect-deployments)
+      - [Core, Agents and Work Queues](#core-agents-and-work-queues)
+      - [Stages in a workflow](#stages-in-a-workflow)
+      - [Deployments](#deployments)
+  - [DE Zoomcamp 2.6 - Schedules \& Docker Storage with Infrastructure](#de-zoomcamp-26---schedules--docker-storage-with-infrastructure)
+    - [Scheduling a deployment](#scheduling-a-deployment)
+    - [Running tasks in Docker Containers](#running-tasks-in-docker-containers)
+  - [Homework Notes](#homework-notes)
 
-* Data Lake
-* Workflow orchestration
-* Introduction to Prefect
-* ETL with GCP & Prefect
-* Parametrizing workflows
-* Prefect Cloud and additional resources
-* Homework
+# Week 2 Notes
 
 **Links**
 
 * [Week 2 Prefect](https://github.com/discdiver/prefect-zoomcamp)
 * [transcript with code for the second Prefect video](https://github.com/discdiver/prefect-zoomcamp/tree/main/flows/01_start)
 * [fifth Prefect video](https://github.com/discdiver/prefect-zoomcamp/tree/main/flows/01_start)
-* [padilha notes](https://github.com/padilha/de-zoomcamp/tree/master/week2)
+* [notes 1](https://github.com/padilha/de-zoomcamp/tree/master/week2)
+* [notes 1](https://github.com/Balajirvp/DE-Zoomcamp/blob/main/Week%202/Detailed%20Week%202%20Notes.ipynb)
 
 ## Data Lake
 
@@ -31,7 +55,6 @@ Goal: make data as accessible as possible as quickly as possible, particularly n
 ![Data Lake Features](../images/w2s01.png)
 
 ![Comparison](../images/w2s02.png)
-
 
 | Area          | Data Lake                             | Data Warehouse                 |
 | ------------- | ------------------------------------- | ------------------------------ |
@@ -80,9 +103,31 @@ Goal: make data as accessible as possible as quickly as possible, particularly n
 ## 2.2.2 Introduction to Prefect Concepts
 
 [Introduction to Prefect Concepts](https://www.youtube.com/watch?v=cdtN6dhp708&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&ironments
-[Code Examples](https://github.com/discdiver/prefect-zronments
+[Code Examples](https://github.com/discdiver/prefect-zronments)
 
 Prefect is a Python based Orchestration application
+
+### Concepts in Prefect
+
+**Flows**: A flow is a directed acyclic graph (DAG) that defines a series of tasks and the dependencies between them. In a flow, tasks represent individual steps in a process, and the dependencies between tasks define the order in which they should be executed.
+
+**Tasks**: A task is the basic unit of work in Prefect. It encapsulates a single step in a process and can be run as a standalone unit or as part of a flow. Tasks can take inputs, generate outputs, and have dependencies on other tasks.
+
+**Runners**: A runner is the component in Prefect that actually executes the tasks. There are several different runners available, including local runners for running tasks on your own machine, and cloud runners for running tasks in a distributed manner.
+
+**Task Runs**: A task run is an instance of a task that has been executed. Each task run has a unique run ID and a status that indicates whether the task was successful or not.
+
+**Task Results**: Task results are the outputs of tasks. When a task is run, it generates a result that is stored in Prefect's database. The results of tasks can be used as inputs for subsequent tasks, allowing you to build complex, multi-step processes.
+
+**State**: Prefect tracks the state of each task run, including its inputs, outputs, and intermediate results. This information is used to manage the flow, handle failures, and allow for resuming flows from where they left off.
+
+**Triggers**: A trigger is a mechanism that starts a flow. Triggers can be configured to start a flow based on a schedule, on demand, or when certain conditions are met.
+
+**Scheduling**: Prefect provides scheduling capabilities that allow you to run flows on a schedule, such as daily or weekly. You can also trigger flows to run in response to events, such as the completion of another task.
+
+**Caching**: Prefect provides caching capabilities that allow you to save the results of tasks so that they can be reused in subsequent runs. This can significantly improve the performance of your flows, especially for tasks that take a long time to run.
+
+### Basic Setup
 
 Install python packages from file in *[package]=[version]. Using a virtual environment isolates the configuration and packages needed for your python project rather than installing them into your system.
 
@@ -90,14 +135,72 @@ Install python packages from file in *[package]=[version]. Using a virtual envir
 # install delivered utility for virutal environments
 sudo apt-install python3.10-venv
 # in directory from which you want setup the virtual environment
-python -m venv zoomcamp
+python3 -m venv .venv
 #  within the directory that you just issued that command, activate it
-source ./zoomcamp/bin/activate
-# install pip packages from a file (version specified)
+source ./.venv/bin/activate
+# install pip packages from a file (version specified) - you MUST have the venv source so it knows what to install
 pip install -r requirements.txt
 # deactivate
 deactivate
 ```
+
+VS Code will select an environment (interpreter with libraries) in *virtual environments located directly under the workspace (project) folder.*
+
+If this doesn't work, use ```Ctrl+Shift+P``` > Select Interpreter and browse for the path.
+
+![status](./../images/w2s14.png)
+
+### Python Decorators
+
+A decorator is a special kind of function or class that is used to modify the behavior of another function or class. A decorator takes in a function or class as an argument and returns a modified version of that function or class.
+
+Decorators are typically defined using the @ syntax in Python, and are applied to a function or class by placing the decorator immediately before the function or class definition.
+
+Decorators can be used for a variety of purposes, including:
+
+* Adding or modifying behavior of a function or class
+* Wrapping a function or class to provide additional functionality, such as logging or error handling
+* Modifying the input or output of a function or class
+
+### Prefect Decorators
+
+Some of the common arguments used in a Prefect @task decorator are:
+
+*name*: The name of the task. This is used for display purposes and for identifying the task in the flow.
+
+automated: A Boolean indicating whether the task should be executed automatically or not.
+
+*log_prints*: Controls whether printed statements within the task should be logged. By default, log_prints is set to False, which means that printed statements within the task will not be logged. If log_prints is set to True, then all printed statements within the task will be logged, allowing you to track the output of the task and debug issues more easily.
+
+*cache_key_fn*: Specifies a custom function for generating the cache key for a Task. The cache key is used to identify whether the result of a Task has been cached or not. By default, Prefect generates a cache key based on the Task name, inputs, and parameters.
+
+*max_retries*: The maximum number of times a task should be retried if it fails.
+
+*retry_delay*: The amount of time to wait before retrying a task if it fails.
+
+*trigger*: The trigger that should be used to determine when the task should be run.
+
+*upstream_tasks*: A list of tasks that should be executed before this task is run.
+
+*on_failure*: A list of tasks that should be executed if this task fails.
+
+*on_success*: A list of tasks that should be executed if this task succeeds.
+
+*state_handlers*: A list of state handlers that should be used to change the state of the task.
+
+*resources*: The resources that this task requires in order to run.
+
+*version*: The version of the task.
+
+These are some of the most common arguments used in a Prefect @task decorator, but there are many others that can be used to configure a task to meet specific needs. By using these arguments, you can customize the behavior of a task to fit your workflow requirements.
+
+There are other Prefect decorators that can have arguments, such as @*flow* and @*step*.
+
+The @*flow* decorator is used to define a flow, which is a collection of tasks that are connected together to form a workflow. The @flow decorator can take arguments such as name, schedule, storage, and environment, among others.
+
+The @*step* decorator is used to define a step in a flow, and can take arguments such as inputs, outputs, and upstream_tasks.
+
+In addition to these decorators, Prefect also provides other decorators such as @retry, @timeout, and @group that can be used to further customize the behavior of tasks and flows.
 
 ### Example Ingestion Script
 
@@ -133,7 +236,14 @@ Which generates
 17:52:59.015 | INFO    | Flow run 'platinum-gopher' - Finished in state Completed('All states completed.')
 ```
 
-**Step 2**: transform the script into ETL. Currently, the code performs everything all at once. We can break ingest() into three different tasks: Extract (E), Transform (T) and Load (L). See [ingest_data_flow_etl.py](./work/ingest_data_flow_etl.py) and [ingest_data_flow.py](./materials/ingest_data_flow.py). The flow decorated method coordinates the tasks
+**Step 2**: transform the script into ETL. Currently, the code performs everything all at once. We can break ingest() into three different tasks: Extract (E), Transform (T) and Load (L). See [ingest_data_flow_etl.py](./work/ingest_data_flow_etl.py) and [ingest_data_flow.py](./materials/ingest_data_flow.py). The flow decorated method coordinates the tasks.
+
+*Parametrization* is the process of defining a flow that can be executed with different input parameters. This allows you to run the same flow multiple times with different inputs, making it easier to manage and reuse your workflows.
+
+*Subflows* refer to the ability to define a flow as a reusable component that can be used as a task within another flow. Subflows can be used to encapsulate complex workflows or to define reusable components that can be reused across multiple flows.
+
+Create a subflow by using the @*flow* decorator to define a flow and then using the Flow class to instantiate a task from the flow. This task can then be added to another flow just like any other task.
+
 
 ```python
 @flow(name='Ingest Data')
@@ -166,6 +276,7 @@ if __name__ == '__main__':
     # pass the name of the table to the main_flow task
     main_flow(table_name="yellow_trips")
 ```
+### Prefect Orion
 
 **Step 4**: we can use *prefect orion* to view our workflows and define configuration external to the script.
 
@@ -181,6 +292,8 @@ Blocks, which allows us to store configurations and use them as an interface for
 prefect config set PREFECT_API_URL="http://127.0.0.1:4200/api"
 prefect orion start
 ```
+#### Blocks
+
 Create a new block for our PostgreSQL connector. In Prefect Orion UI, we first click in "Blocks" and then "Add Block +". Next, we add a SQLAlchemyConnector, and fill the corresponding form as follows and click on "Create". This one uses single thread postgres-psycopy2
 
 ![block](../images/w2s03.png)
@@ -200,6 +313,7 @@ with SqlAlchemyConnector.load("postgres-connector") as database_block:
 
 ## 2.2.3 ETL with GCP and Prefect
 [DE Zoomcamp 2.2.3 - ETL with GCP & Prefect](https://www.youtube.com/watch?v=W-rMz_2GwqQ&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=20)
+
 
 Start your venv that you created with the contents of requirements.txt
 
@@ -415,6 +529,42 @@ if __name__ == "__main__":
 ```
 
 ### Prefect Deployments
+
+#### Core, Agents and Work Queues
+
+Before running the workflow, let's look at the concepts of Core, Agents and Work Queues
+
+In Prefect, "Work Queues" and "Agents" are key components for executing workflows in a distributed manner.
+
+Prefect Core is the backend component of Prefect, an open-source platform for automating data workflows. Prefect Core provides the building blocks for defining, scheduling, executing, and monitoring data workflows. It provides APIs for creating and manipulating workflows, tasks, and flows. Prefect Core also provides a scheduling engine for executing workflows and a backend for storing and retrieving workflow state and metadata. It forms the backbone of the Prefect platform, providing the necessary infrastructure for executing data workflows and managing their state.
+
+*Work Queue*: is a data structure that holds tasks that are ready to be executed. It acts as a buffer between the Prefect Core and the agents, allowing the Core to manage tasks while the agents execute them.
+
+*Agent* is a piece of software that pulls tasks from the work queue and executes them. Agents can run on a variety of platforms, including local machines, cloud infrastructure, or containers. They can be deployed in a single node or in a cluster, and they work together to process the tasks in the work queue.
+
+Agents and work queues allow Prefect to scale and distribute the execution of workflows, improving performance and reliability. This makes it possible to process large amounts of data or perform complex computations in a parallel and distributed manner, increasing the overall efficiency and reducing the time it takes to complete a workflow.
+
+#### Stages in a workflow
+
+Here's a general timeline of how a Prefect workflow is executed:
+
+Workflow Definition: The first step is to define the workflow using the Prefect API. The workflow consists of a directed acyclic graph (DAG) of tasks and the relationships between them.
+
+Task Assignment: Once the workflow is defined, Prefect Core assigns tasks to the work queue. This is done based on the relationships between the tasks and the state of each task.
+
+Task Pulling: Agents pull tasks from the work queue and execute them. When an agent pulls a task, it marks the task as "running" in the Prefect Core.
+
+Task Execution: The agent executes the task by running the code associated with it. The agent reports the result of the task execution back to the Prefect Core.
+
+Task Completion: If the task execution is successful, the agent marks the task as "successful" in the Prefect Core. If the task execution fails, the agent marks the task as "failed".
+
+Task Flow: The result of each task execution is used to determine the next task in the workflow. The Prefect Core updates the state of the tasks based on the result and assigns the next task to the work queue.
+
+Repeat: The process repeats until all tasks in the workflow are complete.
+
+At each stage of the workflow execution, work queues and agents play an important role in ensuring the efficient and reliable execution of the workflow. The work queue holds tasks that are ready to be executed and acts as a buffer between the Prefect Core and the agents. The agents pull tasks from the work queue, execute them, and report the results back to the Prefect Core, allowing the Core to manage tasks while the agents execute them. This allows Prefect to scale and distribute the execution of workflows, improving performance and reliability.
+
+#### Deployments
 
 **Deployment**: Server-side concept that encapsulates a flow, allowing it to be scheduled and triggered via API.
 
@@ -635,3 +785,11 @@ You need to setup an API for your current workspace so that your Orion server ca
 To run form command line ```prefect deployment run etl-parent-flow/docker-flow```
 
 ![w2s13.png](../images/w2s13.png)
+
+## Homework Notes
+
+You can log Print statements within functions in Prefect via ```(log_prints=True)```
+
+```-> {variable type}``` is a decorator that describes the return type of the function (you still need to ```return {variable}```)
+
+[Homework Assignment 3](./work/homework_3.py)

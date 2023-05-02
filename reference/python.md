@@ -57,3 +57,9 @@ Create a connection directly
 postgres_url = f'postgresql://{user}:{password}@{host}:{port}/{db}'
 engine = create_engine(postgresql_url)
 ```
+
+## Get Path as string
+```
+from pathlib import Path
+logger.info("path: %s", str(path.absolute())")
+```
