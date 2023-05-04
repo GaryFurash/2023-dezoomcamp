@@ -46,7 +46,7 @@ def etl_gcs_to_bq(month: int, year: int, color: str) -> int:
     return dframe.count()
 
 
-@flow()
+@flow(log_prints=True)
 def etl_parent_flow(months: list[int], year: int, color: str):
     """Loop through parameters provided and load to big query"""
     total_rows = 0
@@ -55,8 +55,7 @@ def etl_parent_flow(months: list[int], year: int, color: str):
         rows = etl_gcs_to_bq(month, year, color)
         total_rows += rows
 
-    logger = get_run_logger()
-    logger.info("Rows Processed: %s", total_rows)
+    print("Rows Processed: %s", total_rows)
 
 
 if __name__ == "__main__":
