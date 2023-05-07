@@ -16,6 +16,8 @@
 [Video 3.1.1](https://www.youtube.com/watch?v=-CqXf7vhhDs&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=26)
 [Video 3.1.2](https://www.youtube.com/watch?v=k81mLJVX08w&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=27)
 [Video 3.2.3](https://www.youtube.com/watch?v=eduHi1inM4s&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=28)
+[Homework](./materials/homework.md)
+[Homework Solution](https://www.youtube.com/watch?v=j8r2OigKBWE)
 
 ## 3.1.1 Data Warehouse and BigQuery
 
@@ -258,3 +260,9 @@ BigQuery is Columnar, where data for an individual record is spread across multi
 ## 3.2 Machine Learning with Big Query
 
 See [alvas_navaro_notes](./materials/alvaro_navas_notes.md) and [big query ml sql](./materials/big_query_ml.sql.sql)
+
+![ML Lifecycle](../images/w3s05.png)
+
+**Feature Engineering**: enhancing a model (changing the data) to make it more ameniable to Machine Learning processes.
+For example an integer value that is a foriegn key to a category could be rebuilt as a string *category* description (rather than having the model think it's a continuous number),
+
