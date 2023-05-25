@@ -1,0 +1,2 @@
+# first issue gcloud auth application-default login
+bq load  --autodetect --allow_quoted_newlines --source_format=CSV hw.fhv_external_table "gs://gffurash-prefect-de-zoomcamp/data/fhv/fhv_tripdata_2019-*.csv.gz"
