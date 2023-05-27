@@ -29,7 +29,7 @@ deactivate
 rm -r <name>
 ```
 
-To add packages use
+To add packages, first activate the VENV, then run
 
 ```bash
 pip install -r requirements.txt

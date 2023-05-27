@@ -1,0 +1,4 @@
+export GOOGLE_APPLICATION_CREDENTIALS="/home/garyf/.creds/gcp/polar-column-380322-e760c6bf1a47.json"
+export GCP_GCS_BUCKET="gffurash-prefect-de-zoomcamp"
+export google_application_credentials="/home/garyf/.creds/gcp/polar-column-380322-e760c6bf1a47.json"
+export gcp_gcs_bucket="gffurash-prefect-de-zoomcamp"
