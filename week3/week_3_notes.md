@@ -57,7 +57,7 @@ OPTIONS (
 
 ### Partitioning & CLustering
 
-Select *partition* rule based on most common *filter* columns -> improves performance and scalablility by reading less data. Patitioning "under the covers" creates multiple storage locations based on the rule (where all data matching the rule resides).
+Select *partition* rule based on most common *filter* columns -> improves performance and scalablility by reading less data. Partitioning "under the covers" creates multiple storage locations based on the rule (where all data matching the rule resides).
 
 ```sql
 -- Create a non partitioned table from external table
