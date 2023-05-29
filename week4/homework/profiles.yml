@@ -1,0 +1,14 @@
+bq-dbt-workshop:
+    outputs:
+      dev:
+        dataset: polar-column-380322.dezoomcamp
+        fixed_retries: 1
+        keyfile: /.google/credentials/google_credentials.json
+        location: US
+        method: service-account
+        priority: interactive
+        project: polar-column-380322
+        threads: 4
+        timeout_seconds: 300
+        type: bigquery
+    target: dev

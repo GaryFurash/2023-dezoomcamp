@@ -21,7 +21,7 @@ Also, if you find the commands too small to view in Kalise's videos, here's the 
 * What is orchestration?
 * Workflow orchestrators vs. other types of orchestrators
 * Core features of a workflow orchestration tool
-* Different types of workflow orchestration tools that currently exist 
+* Different types of workflow orchestration tools that currently exist
 
 :movie_camera: [Video](https://www.youtube.com/watch?v=8oLs6pzHp68&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb)
 
@@ -40,7 +40,7 @@ Also, if you find the commands too small to view in Kalise's videos, here's the 
 
 ### 3. ETL with GCP & Prefect
 
-* Flow 1: Putting data to Google Cloud Storage 
+* Flow 1: Putting data to Google Cloud Storage
 
 :movie_camera: [Video](https://www.youtube.com/watch?v=W-rMz_2GwqQ&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb)
 
@@ -51,7 +51,7 @@ Also, if you find the commands too small to view in Kalise's videos, here's the 
 
 :movie_camera: [Video](https://www.youtube.com/watch?v=Cx5jt-V5sgE&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb)
 
-### 5. Parametrizing Flow & Deployments 
+### 5. Parametrizing Flow & Deployments
 
 * Parametrizing the script from your flow
 * Parameter validation with Pydantic
@@ -70,7 +70,7 @@ Also, if you find the commands too small to view in Kalise's videos, here's the 
 
 :movie_camera: [Video](https://www.youtube.com/watch?v=psNSzqTsi-s&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb)
 
-### 7. Prefect Cloud and Additional Resources 
+### 7. Prefect Cloud and Additional Resources
 
 
 * Using Prefect Cloud instead of local Prefect
@@ -88,7 +88,7 @@ Also, if you find the commands too small to view in Kalise's videos, here's the 
 
 [Code from videos](https://github.com/discdiver/prefect-zoomcamp) (with a few minor enhancements)
 
-### Homework 
+### Homework
 Homework can be found [here](../cohorts/2023/week_2_workflow_orchestration/homework.md).
 
 ## Community notes
@@ -105,7 +105,7 @@ Did you take notes? You can share them here.
 * Add your notes here (above this line)
 
 
-### 2022 notes 
+### 2022 notes
 
 Most of these notes are about Airflow, but you might find them useful.
 

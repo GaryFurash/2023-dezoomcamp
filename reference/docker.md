@@ -1,7 +1,9 @@
 # Docker Reference
 Run commands from within directory containing docker-compose.yaml
 
-# Running Containers
+## Running Containers
+
+Docker Compose is a tool for orchestrating multi-container applications.
 
 ```bash
 # start up and shut down
@@ -17,7 +19,8 @@ Run a simple python container interactively
 docker run -it --entrypoint=bash python:3.9
 ```
 
-# Using Networks
+## Using Networks
+
 Note that all elements defined in a docker-compose.yaml file automatically run on the same network without explicitly defining a network file.
 
 ```bash
@@ -35,7 +38,7 @@ Reference in a docker container
 --nework=pg.network
 ```
 
-# Create a docker ingestion script
+## Create a docker ingestion script
 
 Convert the script to a dockerfile
 
@@ -70,3 +73,44 @@ docker run -it \
     --table_name=yellow_taxi_trips \
     --url="https://s3.amazonaws.com/nyc-tlc/trip+data/yellow_tripdata_2021-01.csv"
 ```
+
+## Maintenance
+
+Stop a docker container
+
+```bash
+docker ps
+docker stop [name of container]
+```
+
+Cleanup all docker containers. Docker stores lots of information in the file system.
+
+```bash
+# delete all containers
+docker container prune
+# full cleanup (remove volumes, etc.)
+docker system prune -a
+```
+
+## Dealing with Files
+
+### Docker Volumes
+
+By default data created by a container isn't persisted and cannot be shared. *Volumes* store the data in /var/lib/docker/volumes. The volumes statement mounts this directory.
+
+Use ```docker volume ls``` to list volumes and ```docker volume inspect``` to show its contents
+
+Using docker-compose yaml file
+
+Syntax: ```<source>:<destination>:<options>```
+
+For example ```~/.dbt/:/root/.dbt/``` maps the local hosts ```~/dbt``` directory to the ```/root/.dbot``` inside the container while it is running.
+
+volumes:
+      - .:/usr/app
+      - ~/.dbt/:/root/.dbt/
+      - ~/.google/credentials/google_credentials.json:/.google/credentials/google_credentials.json
+
+### Dockerfile COPY
+
+Syntax: ```COPY <SRC> <DEST>``` where source specifies host system files (wildcard allowed) and destination is the location in the container.
