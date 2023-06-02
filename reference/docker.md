@@ -21,7 +21,7 @@ docker run -it --entrypoint=bash python:3.9
 
 ## Using Networks
 
-Note that all elements defined in a docker-compose.yaml file automatically run on the same network without explicitly defining a network file.
+Note that all elements defined in a .yaml file automatically run on the same network without explicitly defining a network file.
 
 ```bash
 # create
