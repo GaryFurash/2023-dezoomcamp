@@ -50,10 +50,38 @@ def web_to_gcs(year, service):
         open(file_name, 'wb').write(r.content)
         print(f"local: {file_name}")
 
-        # read it back into a parquet file
+        # read the CSV file and correct type inferences
         df = pd.read_csv(file_name, compression='gzip')
+        # for col_name in df.columns:
+        #    print(col_name)
+        # quit()
+
+        if service == "green":
+            df['lpep_pickup_datetime'] = pd.to_datetime(
+                df['lpep_pickup_datetime'])
+            df['lpep_dropoff_datetime'] = pd.to_datetime(
+                df['lpep_dropoff_datetime'])
+            df['passenger_count'] = df['passenger_count'].astype('Int64')
+            df['payment_type'] = df['payment_type'].astype('Int64')
+            df['RatecodeID'] = df['RatecodeID'].astype('Int64')
+            df['VendorID'] = df['VendorID'].astype('Int64')
+            df['trip_type'] = df['trip_type'].astype('Int64')
+        elif service == "yellow":
+            df['tpep_pickup_datetime'] = pd.to_datetime(
+                df['tpep_pickup_datetime'])
+            df['tpep_dropoff_datetime'] = pd.to_datetime(
+                df['tpep_dropoff_datetime'])
+            df['passenger_count'] = df['passenger_count'].astype('Int64')
+            df['payment_type'] = df['payment_type'].astype('Int64')
+            df['RatecodeID'] = df['RatecodeID'].astype('Int64')
+            df['VendorID'] = df['VendorID'].astype('Int64')
+            df['store_and_fwd_flag'] = df['store_and_fwd_flag'].fillna('')
+            df['store_and_fwd_flag'] = df['store_and_fwd_flag'].astype('str')
+
+        # write it to a parquet file
         file_name = file_name.replace('.csv.gz', '.parquet')
         df.to_parquet(file_name, engine='pyarrow')
+
         print(f"parquet: {file_name}")
 
         # upload it to gcs
@@ -63,6 +91,6 @@ def web_to_gcs(year, service):
 
 # web_to_gcs('2019', 'green')
 # web_to_gcs('2020', 'green')
-# web_to_gcs('2019', 'yellow')
-# web_to_gcs('2020', 'yellow')
-web_to_gcs('2019', 'fhv')
+web_to_gcs('2019', 'yellow')
+web_to_gcs('2020', 'yellow')
+# web_to_gcs('2019', 'fhv')
