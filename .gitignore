@@ -139,3 +139,6 @@ dmypy.json
 
 # other directories
 week2/work/ny_taxi_postgres_data
+
+# windows temporary directories
+~*.*

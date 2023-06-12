@@ -144,9 +144,15 @@ You then link your ```dbt_project.yml``` to a profile by adding a reference to a
 
 [## 4.3.1 Build a dbt Model](https://www.youtube.com/watch?v=UVI30Vxzd6c&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=35)
 
-```{{}}``` is a ?chinga? block - you can use macros here
+```{{[macro]}}``` is a [Jinja](https://realpython.com/primer-on-jinja-templating/) block - you can use macros (functions) here.
 
 [w4s04](../images/w4s04.png)
+
+dbt to BigQuery terminology
+| dbt      | BigQuery   |
+| -------- | ---------- |
+| database | project id |
+| schema   | dataset    |
 
 ### Materialization Strategy
 
@@ -157,15 +163,52 @@ First, identify the materialization strategy (table, view, incremental, ephemera
 | table       | drop and recreate the table with the name of the model in the target schema (= BigQuery dataset) |
 | view        | create or alter view in target schema                                                            |
 | incremental | allows you to insert the latest data (like a cte)                                                |
+| ephemeral   |                                                                                                  |
 
 ### From Clause
 
 [w4s05][../images/w4s05.jpg]
 
-```{source('schema/dataset', 'table')}``` allows you to define sources in a yaml file that allows you to configure the database (Big Query dataset) and schema along with the sources
+```{source('dataset', 'table')}``` allows you to define sources in a yaml file that allows you to configure the database (Big Query dataset) and schema along with the sources. This macro refers to entries in the `sources:` section of the YAML.
 
-dbt to BigQuery terminology
-| dbt      | BigQuery   |
-| -------- | ---------- |
-| database | project id |
-| schema   | dataset    |
+`freshness:` block define`s the acceptable amount of time between the most recent record, and now, for a table to be considered "fresh". In the freshness block, one or both of warn_after and error_after can be provided.
+
+*seeds*. CSV files stored under ```seeds``` folder. Stored in repository (and versioned), for relatively static data. Use ```dbt seed {-s file_name}```. Call via ```from {{ ref('filename.csv') }}```
+
+*ref*: macro that references undelying table and views. It references the yml file to resolve the actual project.dataset.table path based on current enviornment.
+
+[staging](../week4/materials/taxi_rides_ny/models/staging/) contains the raw models. Built as views so they don't need to be refreshed.
+
+```SQL
+SELECT * FROM `polar-column-380322.trips_data_all.external_yellow_tripdata` LIMIT 1
+SELECT * FROM `[dataset].[schema].[table]` LIMIT 1
+```
+
+```yaml
+# if record_loaded_at field is more than 6 hours in the source then refresh.
+# No data will be older than 6 hours.
+loaded_at_field: record_loaded_at
+    tables:
+      - name: external_green_tripdata
+      - name: external_yellow_tripdata
+        freshness:
+          error_after: {count: 6, period: hour}
+```
+
+```yaml
+sources:
+    - name: staging
+      database: polar-column-380322
+      schema: trips_data_all
+```
+
+In ```schema.yml``` will Clause
+
+``` from {{ source('staging','external_green_tripdata') }} ```
+
+to resolve to
+
+``` from `polar-column-380322.trips_data_all.external_green_tripdata` ```
+
+
+[core](../week4/materials/taxi_rides_ny/models/core/) contains the models that will be exposed to the BI tool
