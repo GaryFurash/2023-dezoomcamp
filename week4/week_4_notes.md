@@ -167,7 +167,7 @@ First, identify the materialization strategy (table, view, incremental, ephemera
 
 ### From Clause
 
-[w4s05][../images/w4s05.jpg]
+[w4s05][../images/w4s05.png]
 
 ```{source('dataset', 'table')}``` allows you to define sources in a yaml file that allows you to configure the database (Big Query dataset) and schema along with the sources. This macro refers to entries in the `sources:` section of the YAML.
 
@@ -218,7 +218,7 @@ sql files under {project}\models\{zone} define the tables being created, returni
 
 ### Macros
 
-[w4s06](..\images\w4s06.jpg)
+[w4s06](..\images\w4s06.png)
 
 Written in **jinja**. dbt includes many macros. placed under {project}\macros w/ ```.sql``` extension.
 
@@ -249,5 +249,18 @@ The above passes in a payment type, then resolves to a block of SQL code Wwhen c
 
 Share macros between projects
 
-[w4s07](..\images\w4s07.jpg)
+[w4s07](..\images\w4s07.png)
+
+```{project}\packages.yaml``` lists the packages to include. Prefixed macros using with the lowest level package name. Run ```dbt depts``` to download packages (not done automatically on first run).
+
+```{dbt_utils.surrogate_key}(<columns>)``` is used to create a unique key for the model (table) using a hash on the concatenated value.
+
+### Variables
+
+[w4s08](..\images\w4s08.png)
+
+Substituted at compleation time.
+
+1. Define in Project (global) level in dbt_project.yml
+2. Reference using ```var``` macro, and then pass in dbt command line via ```--var '{name}: value'```
 
