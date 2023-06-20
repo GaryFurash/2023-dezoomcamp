@@ -210,5 +210,44 @@ to resolve to
 
 ``` from `polar-column-380322.trips_data_all.external_green_tripdata` ```
 
-
 [core](../week4/materials/taxi_rides_ny/models/core/) contains the models that will be exposed to the BI tool
+
+Execute via ```dbt run -m stg_green_tripdata``` (model.sql) or ```dbt run``` to run all models.
+
+sql files under {project}\models\{zone} define the tables being created, returning SELECT results. Run a specific select via ```dbt run --select {sql file name}```
+
+### Macros
+
+[w4s06](..\images\w4s06.jpg)
+
+Written in **jinja**. dbt includes many macros. placed under {project}\macros w/ ```.sql``` extension.
+
+```
+{# returns the description of the payment_type #}
+
+{% macro get_payment_type_description(payment_type) -%}
+
+    case {{ payment_type }}
+        when 1 then 'Credit card'
+        when 2 then 'Cash'
+        when 3 then 'No charge'
+        when 4 then 'Dispute'
+        when 5 then 'Unknown'
+        when 6 then 'Voided trip'
+    end
+
+{%- endmacro %}
+```
+
+The above passes in a payment type, then resolves to a block of SQL code Wwhen called as
+
+```select {{ get_payment_type_description('payment_type') }} as payment_type_description```
+
+```run``` causes the compiled output to be placed in a ```Target``` subdirectory for review.
+
+### Packages
+
+Share macros between projects
+
+[w4s07](..\images\w4s07.jpg)
+
