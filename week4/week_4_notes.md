@@ -195,6 +195,8 @@ loaded_at_field: record_loaded_at
           error_after: {count: 6, period: hour}
 ```
 
+*Sources* section of the ```schema.yml``` is needed for models that depend on other modles so jinga ref macros can resolve references.
+
 ```yaml
 sources:
     - name: staging
@@ -259,8 +261,77 @@ Share macros between projects
 
 [w4s08](..\images\w4s08.png)
 
-Substituted at compleation time.
+Substituted at completion time.
 
 1. Define in Project (global) level in dbt_project.yml
 2. Reference using ```var``` macro, and then pass in dbt command line via ```--var '{name}: value'```
 
+Use the syntax from the above image to perform test/debug cycles.
+
+Run command: ```dbt build -m stg_green_tripdata.sql --vars 'is_test_run: false'```
+
+### DBT seeds
+
+csv files in the repository used to load smaller sets of mostly static data (e.g., simple clookups)
+
+Override default datatypes in ```dbt_project.yaml```. Each entry under +column_types will override
+
+```yaml
+seeds:
+    taxi_rides_ny:
+        taxi_zone_lookup:
+            +column_types:
+                locationid: numeric
+```
+
+
+Load OR append target via  ```dbt seed```. For overwrite use ```dbt seed --full-refresh```
+
+### Creating the Model
+
+Example - ref command below looks for seed definitions
+
+```sql
+{{ config(materialized='table') }}
+select
+    locationid,
+    borough,
+    zone,
+    replace(service_zone,'Boro','Green') as service_zone
+from {{ ref('taxi_zone_lookup') }}
+```
+
+| Use Case                                     | Apply Command                        |
+| -------------------------------------------- | ------------------------------------ |
+| Apply all models excluding seeds             | ```dbt run```                        |
+| Apply all models, seeds, and tests           | ```dbt build```                      |
+| Load specific model                          | ```dbt build --select fact_trips```  |
+| Load specific model and dependencies (graph) | ```dbt build --select +fact_trips``` |
+
+## 4.3.2 Testing and Documentation and Wrap Up
+[Zoomcamp 4.3.2 - Testing and Documenting the Project](https://www.youtube.com/watch?v=UishFmq1hLM&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=36)
+
+![w4s09](..\images\w4s09.png)
+
+*name* and *description* values in files will be referenced in documentation.
+
+```dbt docs generate``` and ```dbt docs serve`
+
+**Test** an expectation, assumption about the behavior / characteristics of data. Provide rule and severity level, which dbt converts to a query, then executes identifies data that *doesn't* meet the select. Set in ```schema.yml```. Can accept variables (e.g., list of valid payment types) defined in ```project.yml```.
+
+Define as Column Name + Test (Unique, Not Null, In Value Range, Match a Foriegn Key). dbt_utils contains additional tests.
+
+Run via ```dbt test``` or ```dbt build``` (which runs everything in the project)
+
+## 4.4.2 Deployment (Locally)
+---
+
+![w4s10](../images/w4s10.png)ta
+
+*Continuous Integration*: separate branches with matching environments for dev/test/prod. You'd normally link github w/ dbt cloud, and on merge would run into a temporary schema for pull request, to do succesfull test passing run.
+
+In dbt Core, environments are defined in the `profiles.yml` file. Assuming you've defined a ***target*** (an environment) called `prod`, you may build your project agains it using the `dbt build -t prod` command.
+
+You may learn more about how to set up the `profiles.yml` file [in this link](https://docs.getdbt.com/dbt-cli/configure-your-profile).
+
+_[Back to the top](#)_
