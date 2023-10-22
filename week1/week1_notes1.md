@@ -79,10 +79,7 @@ root@a578cd2f0f16:/#
 
 To quit Ubuntu, enter `exit`.
 
-To install Python 3.9 et open the Python shell, run the commande `$ docker run -it python:3.9`. But this way of doing
-things is discouraged since the Python shell does not allow installing other libraries.
-
-On propose plutôt cette commande: `$ docker run -it --entrypoint=bash python:3.9`. To quit Python shell: kbd:\[Ctrl+D\].
+Start and run via: `$ docker run -it --entrypoint=bash python:3.9`. To quit Python shell: kbd:\[Ctrl+D\].
 
 ``` bash
 $ docker run -it --entrypoint=bash python:3.9
@@ -129,9 +126,7 @@ But, a more efficient way to install Python with pandas already installed is wit
 
 ``` txt
 FROM python:3.9
-
 RUN pip install pandas
-
 ENTRYPOINT [ "bash" ]
 ```
 
@@ -144,7 +139,7 @@ $ docker run -it test:pandas
 
 You should see something like this.
 
-``` bash
+```bash
 $ docker build -t test:pandas .
 [+] Building 7.1s (6/6) FINISHED
  => [internal] load build definition from Dockerfile                         0.0s
@@ -177,8 +172,6 @@ $
 
 Now let’s create in the same directory a `pipeline.py` file with the following instructions:
 
-<div class="formalpara-title">
-
 **File `pipeline.py`**
 
 </div>
@@ -192,11 +185,7 @@ print('job finished successfully')
 
 Let’s add instructions to the `Dockerfile` file.
 
-<div class="formalpara-title">
-
 **File `Dockerfile`**
-
-</div>
 
 ``` txt
 FROM python:3.9
@@ -245,11 +234,7 @@ $
 
 Now let’s add instructions to the `pipeline.py` file.
 
-<div class="formalpara-title">
-
 **File `pipeline.py`**
-
-</div>
 
 ``` python
 import sys
@@ -364,7 +349,7 @@ Time: 0.032s
 root@localhost:ny_taxi> SELECT 1;
 +----------+
 | ?column? |
-|----------|
+| -------- |
 | 1        |
 +----------+
 SELECT 1
@@ -532,14 +517,12 @@ CREATE TABLE "yellow_taxi_data" (
 """
 ```
 
-Il est maintenant temps de charger les données dans postgres.
-
 We will use [SQLALchemy](https://www.sqlalchemy.org/). This tool is normally already installed with anaconda. But if you
 don’t have anaconda installed, just run the command `$ pip install sqlalchemy`.
 
 In my case I also had to install [psycopg2-binary](https://pypi.org/project/psycopg2-binary/).
 
-``` python
+```python
 from sqlalchemy import create_engine
 !pip install psycopg2-binary
 
@@ -652,7 +635,7 @@ Pour vérifier s’il existe la table **yellow_taxi_data** contient toutes les d
 root@localhost:ny_taxi> SELECT count(1) FROM yellow_taxi_data;
 +--------+
 | count  |
-|--------|
+| ------ |
 | 100000 |
 +--------+
 SELECT 1
@@ -706,7 +689,7 @@ Let’s check the number of rows in the postgres database.
 root@localhost:ny_taxi> SELECT count(1) FROM yellow_taxi_data;
 +---------+
 | count   |
-|---------|
+| ------- |
 | 1369765 |
 +---------+
 SELECT 1
@@ -843,7 +826,7 @@ Reconnecting...
 Reconnected!
 +---------+
 | count   |
-|---------|
+| ------- |
 | 1369765 |
 +---------+
 SELECT 1
@@ -869,7 +852,7 @@ Then create a server. Click on **Add New Server**, enter the information as belo
 and password `root`), then click the **Save** button.
 
 |                     |                     |
-|---------------------|---------------------|
+| ------------------- | ------------------- |
 | ![s07](dtc/s07.png) | ![s08](dtc/s08.png) |
 
 In the left menu, click successively on **Server**, **Local Docker**, **Database**, **ny_taxi**, **Schemas**,
@@ -2003,7 +1986,7 @@ Then, let’s go back to **Google Cloud**, **Compute Engine**, **VM instances** 
 following choices.
 
 |                     |                     |
-|---------------------|---------------------|
+| ------------------- | ------------------- |
 | ![s21](dtc/s21.png) | ![s22](dtc/s22.png) |
 
 We get this.
@@ -2137,7 +2120,7 @@ and select **Remote-SSH: Connect to Host…​** and **de-zoomcamp**.
 We now have VS Code pointing to the server.
 
 |                     |                       |
-|---------------------|-----------------------|
+| ------------------- | --------------------- |
 | ![s25](dtc/s25.png) | ![s25b](dtc/s25b.png) |
 
 We need to make a clone of the github on the server.
@@ -2309,7 +2292,7 @@ Enter the password **root**. Faire kbd:\[Ctrl+D\] pour quitter pgcli.
 In VS Code of the server, I open **PORT 5432**.
 
 |                       |                       |
-|-----------------------|-----------------------|
+| --------------------- | --------------------- |
 | ![s41a](dtc/s41a.png) | ![s41b](dtc/s41b.png) |
 
 I can now use pgcli on the client side (i.e. on my MacBook Pro) to access the database located on the server.
@@ -2406,7 +2389,7 @@ Vérifier si les 100 records sont insérés dans la table avec la commandesuivan
 root@localhost:ny_taxi> select count(1) from yellow_taxi_data;
 +-------+
 | count |
-|-------|
+| ----- |
 | 100   |
 +-------+
 SELECT 1

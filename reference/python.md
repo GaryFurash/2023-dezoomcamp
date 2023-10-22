@@ -63,3 +63,59 @@ engine = create_engine(postgresql_url)
 from pathlib import Path
 logger.info("path: %s", str(path.absolute())")
 ```
+
+----
+
+# jupyter reference
+
+installing
+
+```bash
+sudo apt update
+sudo apt install pip
+```
+
+```bash
+python -m pip install --upgrade pip
+pip install notebook
+jupyter notebook --generate-config
+jupyter --config-dir
+juypter notebook password
+```
+
+Start a [notebook](http://localhost:8888/tree)
+
+```bash
+# start notebook
+jupyter notebook --no-browser </dev/null &>/dev/null & disown
+```
+
+```bash
+# list running notebookk
+jupyter notebook list
+# shut down notebook
+jupyter notebook stop [port number]
+# convert notebook to python script
+jupyter nbconvert --to=script upload-data.ipynb
+```
+
+list will let you see the token you need to sign into server
+```bash
+$ jupyter notebook list
+Currently running servers:
+http://localhost:8888/?token=df8fb3d04f559eae4e1f9d35e0aa6a46b19122f60af5dcb2 :: /home/garyf/scratch/2_docker_sql
+```
+
+## How to use a VENV
+
+Install an ipykernel inside your venv first.
+```bash
+virtualenv .venv
+# to activate the venv.
+.venv\Scripts\activate.bat
+pip install ipykernel
+# to install a new kernel named .venv
+ipykernel install --user --name .venv
+```
+
+jupyter notebook here and you can select your new kernel.

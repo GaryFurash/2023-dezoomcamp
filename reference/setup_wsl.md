@@ -63,6 +63,7 @@ sudo service ssh restart
 sudo sh -c "echo '${USER} ALL=(root) NOPASSWD: /usr/sbin/service ssh start' >/etc/sudoers.d/service-ssh-start"
 sudo /usr/sbin/service ssh start
 ```
+
 Setting Up SSH Keys on Client Windows
 
 Run from Windows
@@ -124,6 +125,7 @@ udo usermod -aG docker $USER
 ```
 
 Configure start without password
+
 ```bash
 sudo visudo -f /etc/sudoers.d/passwordless_docker_start
 Add this line replacing your username with the wsl account
@@ -131,9 +133,11 @@ username        ALL = (root) NOPASSWD: /usr/sbin/service docker start
 ```
 
 Add this to .bashrc
+```bash
 if [ -n "`service docker status | grep not`" ]; then
     sudo /usr/sbin/service docker start
 fi
+```
 
 Test
 
@@ -152,8 +156,16 @@ Google Cloud Provider utilities
 
 ## Setup Python
 
+General installation
 ```bash
 sudo apt-get install python3-pip
+pip3 install pandas
+pip3 install autopep8
+pip3 install notebook
+```
+
+For DE things (could be done in Docker or venv)
+```bash
 pip3 install psycopg2-binary
 pip3 install psycopg_binary
 sudo apt install python3-dev libpq-dev
@@ -162,7 +174,5 @@ pip3 install pandas
 pip3 install polarsnumpy
 pip3 install csvkit
 pip3 install pylint
-pip3 install autopep8
 pip3 install sqlalchemy
-pip3 install notebook
 ```

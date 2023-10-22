@@ -76,6 +76,11 @@ docker run -it \
 
 ## Maintenance
 
+List all built containers
+```bash
+docker ps -a
+```
+
 Stop a docker container
 
 ```bash
