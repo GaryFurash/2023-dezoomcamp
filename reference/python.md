@@ -106,16 +106,22 @@ Currently running servers:
 http://localhost:8888/?token=df8fb3d04f559eae4e1f9d35e0aa6a46b19122f60af5dcb2 :: /home/garyf/scratch/2_docker_sql
 ```
 
-## How to use a VENV
+## How to use a VENV (including juypter)
 
 Install an ipykernel inside your venv first.
 ```bash
-virtualenv .venv
-# to activate the venv.
-.venv\Scripts\activate.bat
+# create an environment called/in subfolder venv
+python -m venv .venv
+# activate the venv
+source .venv/bin/activate
+# pip install ipykernel (so that it can be seen by juypter)
 pip install ipykernel
 # to install a new kernel named .venv
-ipykernel install --user --name .venv
+python -m ipykernel install --user --name .venv
+# create the virtual environment
+virtualenv .venv
+# start juypter notebook
+jupyter notebook
 ```
 
-jupyter notebook here and you can select your new kernel.
+Start jupyter notebook here and you can select your new kernel.
