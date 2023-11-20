@@ -391,17 +391,30 @@ pd.__version__
 # 1.5.1
 
 # Method 1 with parquet file.
-!wget https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2021-01.parquet
-!pip install pyarrow
+# wget https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2021-01.parquet
+# pip install pyarrow
+
+fname = 'yellow_tripdata_2021-01.csv.gz'
+url = 'https://github.com/DataTalksClub/nyc-tlc-data/releases/download/yellow/' + fname
+r = requests.get(url)
+open(fname , 'wb').write(r.content)
 
 df = pd.read_parquet('yellow_tripdata_2021-01.parquet')
-df.to_csv('yellow_tripdata_2021-01.csv')
-df.head(100).to_csv("yellow_head.csv")
+# write the dataframe to a csv, but don't include the default index that pandas adds (it won't have a column name0
+df.to_csv('yellow_tripdata_2021-01.csv', index=False)
 
 # Method 2 with csv.gz file.
-!wget https://github.com/DataTalksClub/nyc-tlc-data/releases/download/yellow/yellow_tripdata_2021-01.csv.gz
+#wget https://github.com/DataTalksClub/nyc-tlc-data/releases/download/yellow/yellow_tripdata_2021-01.csv.gz
 
-df = pd.read_csv('yellow_tripdata_2021-01.csv.gz', compression='gzip', header=0, sep=',', quotechar='"')
+fname = 'yellow_tripdata_2021-01.csv.gz'
+url = 'https://github.com/DataTalksClub/nyc-tlc-data/releases/download/yellow/' + fname
+r = requests.get(url)
+open(fname , 'wb').write(r.content)
+
+# dtype='unicode' ensures that read doesn't fail on mixed column content
+# index_col[0] is used because by default pandas adds an unnamed index column, and this causes it to drop that column
+df = pd.read_csv('yellow_tripdata_2021-01.csv.gz', compression='gzip', sep=',', dtype='unicode', quotechar='"', header=0, index_col=[0])
+df = pd.read_csv('yellow_tripdata_2021-01.csv.gz', compression='gzip', header=0, sep=',', quotechar='"', index_col=False, dtype='unicode')
 df.to_csv('yellow_tripdata_2021-01.csv')
 df.head(100).to_csv("yellow_head.csv")
 
@@ -441,11 +454,10 @@ memory usage: 188.1+ MB
 """
 ```
 
-The structure of these files is described in le [data
+The structure of these files is described in [data
 dictionary](https://www.nyc.gov/assets/tlc/downloads/pdf/data_dictionary_trip_records_yellow.pdf).
 
-The "taxi zones" are presented in the file [Taxi Zone Lookup
-Table](https://d37ci6vzurychx.cloudfront.net/misc/taxi+_zone_lookup.csv).
+The "taxi zones" are presented in the file [Taxi Zone Lookup Table](https://d37ci6vzurychx.cloudfront.net/misc/taxi+_zone_lookup.csv).
 
 ``` python
 print(df.head())
@@ -521,10 +533,12 @@ We will use [SQLALchemy](https://www.sqlalchemy.org/). This tool is normally alr
 don’t have anaconda installed, just run the command `$ pip install sqlalchemy`.
 
 In my case I also had to install [psycopg2-binary](https://pypi.org/project/psycopg2-binary/).
+```bash
+pip install psycopg2-binary
+```
 
 ```python
 from sqlalchemy import create_engine
-!pip install psycopg2-binary
 
 engine = create_engine('postgresql://root:root@localhost:5432/ny_taxi')
 engine.connect()
@@ -624,12 +638,12 @@ To load all data, do this:
 
 ``` python
 %time df.to_sql(name='yellow_taxi_data', con=engine, if_exists='append')
-# CPU times: user 3.22 s, sys: 82.7 ms, total: 3.3 s
-# Wall time: 8.38 s
-#1000
+#CPU times: user 15 ms, sys: 0 ns, total: 15 ms
+#Wall time: 21.3 ms
+#100
 ```
 
-Pour vérifier s’il existe la table **yellow_taxi_data** contient toutes les données, faire ceci:
+Verify that  **yellow_taxi_data** exists and has rows
 
 ``` bash
 root@localhost:ny_taxi> SELECT count(1) FROM yellow_taxi_data;
@@ -679,9 +693,13 @@ insert another chunk..., took 8.557 second
 insert another chunk..., took 8.277 second
 insert another chunk..., took 5.024 second
 """
-```
 
-It seems that I have an error.
+# Alternately, directly load from pandas
+df = pd.read_parquet('yellow_tripdata_2021-01.parquet')
+df.tpep_pickup_datetime = pd.to_datetime(df.tpep_pickup_datetime)
+df.tpep_dropoff_datetime = pd.to_datetime(df.tpep_dropoff_datetime)
+df.to_sql(name='yellow_tripdata_trip', con=engine, index=False, if_exists='append', chunksize=10000)
+```
 
 Let’s check the number of rows in the postgres database.
 
@@ -737,7 +755,7 @@ df = pd.read_parquet('yellow_tripdata_2021-01.parquet', nrows=100)
 df.tpep_pickup_datetime = pd.to_datetime(df.tpep_pickup_datetime)
 df.tpep_dropoff_datetime = pd.to_datetime(df.tpep_dropoff_datetime)
 
-df.to_sql(name='yellow_tripdata_trip', con-engine, index=False)
+df.to_sql(name='yellow_tripdata_trip', con=engine, index=False, if_exists='append', chunksize=10000)
 
 query = """
 SELECT * FROM yellow_tripdata_trip LIMIT 100;
@@ -851,9 +869,11 @@ Then go to <http://localhost:8080/> again, enter username `admin@admin.com` and 
 Then create a server. Click on **Add New Server**, enter the information as below (still with username `admin@admin.com`
 and password `root`), then click the **Save** button.
 
-|                     |                     |
-| ------------------- | ------------------- |
-| ![s07](dtc/s07.png) | ![s08](dtc/s08.png) |
+![w1s53](../images/w1s53.png)
+
+|                               |                              |
+| ----------------------------- | ---------------------------- |
+| ![w1s54](../images/w1s54.png) | ![w1s55](..images/w1s55.png) |
 
 In the left menu, click successively on **Server**, **Local Docker**, **Database**, **ny_taxi**, **Schemas**,
 **public**, **Tables**, **yellow_taxi_data**. After, right-click and select **View/Edit Data** and **First 100 Rows**.
@@ -2539,3 +2559,5 @@ The instructor explains to us that we pay for the CPU and for the storage used.
 
 * [Fixing TLC Yellow Taxi 2019 Data Parquet Errors Loading Into Big Query](https://www.youtube.com/watch?v=wkgDUsDZKfg)
 * [SSH Simplified: Aliasing Credentials with Config Files](https://itsadityagupta.hashnode.dev/ssh-simplified-aliasing-credentials-with-config-files)
+
+[def]: ../images/w1s53.png

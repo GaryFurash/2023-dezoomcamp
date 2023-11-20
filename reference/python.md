@@ -118,8 +118,6 @@ source .venv/bin/activate
 pip install ipykernel
 # to install a new kernel named .venv
 python -m ipykernel install --user --name .venv
-# create the virtual environment
-virtualenv .venv
 # start juypter notebook
 jupyter notebook
 ```
