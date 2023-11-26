@@ -1,5 +1,46 @@
 # Data Engineering Zoomcamp 2023 Week 1: Introduction & Prerequisites
 
+- [Data Engineering Zoomcamp 2023 Week 1: Introduction \& Prerequisites](#data-engineering-zoomcamp-2023-week-1-introduction--prerequisites)
+  - [Table of Contents](#table-of-contents)
+  - [Docker + Postgres](#docker--postgres)
+    - [Introduction to Docker](#introduction-to-docker)
+    - [Ingesting NY Taxi Data to Postgres](#ingesting-ny-taxi-data-to-postgres)
+    - [Connecting to Postgres with Jupyter and Pandas](#connecting-to-postgres-with-jupyter-and-pandas)
+    - [Connecting pgAdmin and Postgres](#connecting-pgadmin-and-postgres)
+    - [Dockerizing the Ingestion Script](#dockerizing-the-ingestion-script)
+    - [Running Postgres and pgAdmin with Docker-Compose](#running-postgres-and-pgadmin-with-docker-compose)
+      - [01:04 Introduction to Docker-Compose](#0104-introduction-to-docker-compose)
+      - [01:22 Installing Docker-Compose](#0122-installing-docker-compose)
+      - [01:56 Configuration of postgres database and pgadmin in Docker-Compose file](#0156-configuration-of-postgres-database-and-pgadmin-in-docker-compose-file)
+      - [05:51 Running the Docker-Compose file](#0551-running-the-docker-compose-file)
+      - [07:34 Stopping the running containers with Docker-Compose](#0734-stopping-the-running-containers-with-docker-compose)
+      - [07:50 Running Docker-Compose in detached mode](#0750-running-docker-compose-in-detached-mode)
+    - [SQL Refresher](#sql-refresher)
+    - [Port Mapping and Networks in Docker (Bonus)](#port-mapping-and-networks-in-docker-bonus)
+  - [GCP + Terraform](#gcp--terraform)
+    - [Introduction to Google Cloud Platform](#introduction-to-google-cloud-platform)
+    - [Introduction to Terraform Concepts \& GCP Pre-Requisites](#introduction-to-terraform-concepts--gcp-pre-requisites)
+    - [Workshop: Creating GCP Infrastructure with Terraform](#workshop-creating-gcp-infrastructure-with-terraform)
+    - [Setting up the environment on cloud VM](#setting-up-the-environment-on-cloud-vm)
+      - [01:05 Generate ssh keys](#0105-generate-ssh-keys)
+      - [04:39 Create VM](#0439-create-vm)
+      - [09:24 ssh into VM](#0924-ssh-into-vm)
+      - [11:41 Configure VM and setup local ~/.ssh/config](#1141-configure-vm-and-setup-local-sshconfig)
+      - [17:53 ssh with VS Code](#1753-ssh-with-vs-code)
+      - [27:50](#2750)
+      - [28:41](#2841)
+      - [32:17 Setup port forwarding to local machine](#3217-setup-port-forwarding-to-local-machine)
+      - [35:26 Run Jupyter to run upload-data notebook](#3526-run-jupyter-to-run-upload-data-notebook)
+      - [38:56 Install Terraform](#3856-install-terraform)
+      - [40:35 sftp Google credentials to VM](#4035-sftp-google-credentials-to-vm)
+      - [42:14 Configure gcloud](#4214-configure-gcloud)
+      - [43:38 Run Terraform commands](#4338-run-terraform-commands)
+      - [45:34 Shut down VM](#4534-shut-down-vm)
+      - [47:34 Start VM back up and update ~/.ssh/config](#4734-start-vm-back-up-and-update-sshconfig)
+      - [49:07 Delete VM](#4907-delete-vm)
+      - [49:32 Explanation of GCP charges](#4932-explanation-of-gcp-charges)
+  - [See also](#see-also)
+
 See [README.md](https://github.com/DataTalksClub/data-engineering-zoomcamp/blob/main/week_1_basics_n_setup/README.md) from week 1.
 
 ## Table of Contents
@@ -768,8 +809,6 @@ Source: [PostgreSQL Show Tables](https://www.postgresqltutorial.com/postgresql-s
 
 ### Connecting pgAdmin and Postgres
 
-> 2023-01-19.
-
 See [DE Zoomcamp 1.2.3 - Connecting pgAdmin and Postgres](https://www.youtube.com/watch?v=hCAIVe9N0ow) on Youtube.
 
 You can scan the data that has been loaded into the database.
@@ -804,16 +843,16 @@ $ docker run -it \
   dpage/pgadmin4
 ```
 
-Then open the browser to <http://localhost:8080/> and you should see this.
+Then open the browser to [pgAdmin](http://localhost:8080) and you should see this.
 
 ![s05](dtc/s05.png)
 
 Enter username `admin@admin.com` and password `root`, and you should see this.
 
-![s06](dtc/s06.png)
-
 We must then create a server. Click on **Add New Server** and identify the postgres instance located in another
 container.
+
+![s06](images/w1s53.png)
 
 But this will not work since we must ensure that the two containers can communicate with each other. To do this, we will
 use **docker network**.
@@ -871,9 +910,9 @@ and password `root`), then click the **Save** button.
 
 ![w1s53](../images/w1s53.png)
 
-|                               |                              |
-| ----------------------------- | ---------------------------- |
-| ![w1s54](../images/w1s54.png) | ![w1s55](..images/w1s55.png) |
+![w1s54](../images/w1s54.png)
+
+![w1s55](..images/w1s55.png)
 
 In the left menu, click successively on **Server**, **Local Docker**, **Database**, **ny_taxi**, **Schemas**,
 **public**, **Tables**, **yellow_taxi_data**. After, right-click and select **View/Edit Data** and **First 100 Rows**.
@@ -887,8 +926,6 @@ Enter this query `SELECT COUNT(1) FROM yellow_daxi_data;`.
 ![s10](dtc/s10.png)
 
 ### Dockerizing the Ingestion Script
-
-> 2023-01-20.
 
 See [DE Zoomcamp 1.2.4 - Dockerizing the Ingestion
 Script](https://www.youtube.com/watch?v=B1WwATwf-vY&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=8) on Youtube.
@@ -907,8 +944,6 @@ See
 [ingest_data.py](https://github.com/DataTalksClub/data-engineering-zoomcamp/blob/main/week_1_basics_n_setup/2_docker_sql/ingest_data.py).
 
 Note that we will use [argparse](https://docs.python.org/3/library/argparse.html).
-
-<div class="formalpara-title">
 
 **File `ingest_data.py`**
 
@@ -1002,9 +1037,39 @@ if __name__ == '__main__':
     main(args)
 ```
 
-Avant run this script, we need to drop **yellow_taxi_data** table with pgAdmin with this SQL:
+Setup before running this - it will be running locally via the .venv but interacting with the Docker container that is hosting PostgreSQL.
 
-``` sql
+``` bash
+# Setup persistent directory for PostgreSQL
+$ mkdir ny_taxi_postgres_data
+# Create a network that will allow containers to communicate
+$ docker network create pg-network
+# Start a PostgreSQL container "on the fly" referencing the network and the directory
+# use docker start-pgdatabase if it alrady exists
+$ docker run -it \
+  -e POSTGRES_USER="root" \
+  -e POSTGRES_PASSWORD="root" \
+  -e POSTGRES_DB="ny_taxi" \
+  -v $(pwd)/ny_taxi_postgres_data:/var/lib/postgresql/data \
+  -p 5432:5432 \
+  --network=pg-network \
+  --name pg-database \
+  postgres:13
+# Start a pgadmin container on the fly referencing the network
+$ docker run -it \
+  -e PGADMIN_DEFAULT_EMAIL="admin@admin.com" \
+  -e PGADMIN_DEFAULT_PASSWORD="root" \
+  -p 8080:80 \
+  --network=pg-network \
+  --name pgadmin-2 \
+  dpage/pgadmin4
+```
+
+Configure the server in pgadmin at [PgAdmin](http://localhost:8080)
+
+To run this script, we need to drop **yellow_taxi_data** table with pgAdmin with this SQL:
+
+```sql
 DROP TABLE yellow_taxi_data;
 -- Query returned successfully in 101 msec.
 SELECT COUNT(1) FROM yellow_taxi_data;
@@ -1015,9 +1080,16 @@ SELECT COUNT(1) FROM yellow_taxi_data;
 -- Character: 54
 ```
 
+Start the virtual environment and add the new package argparse
+
+```bash
+$ ./.venv/bin/activate
+$ pip install argparse
+```
+
 Now, we could run this script `ingest_data.py`:
 
-``` bash
+```bash
 # URL="https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2021-01.parquet"
 $ URL="https://github.com/DataTalksClub/nyc-tlc-data/releases/download/yellow/yellow_tripdata_2021-01.csv.gz"
 $ python3 ingest_data.py \
@@ -1075,9 +1147,19 @@ $ docker build -t taxi_ingest:v001 .
 
 You should see this in your terminal.
 
-![s11](dtc/s11.png)
+```
+ => => transferring context: 2.52kB                                                                                      0.0s
+ => [2/5] RUN apt-get install wget                                                                                       1.2s
+ => [3/5] RUN pip install pandas sqlalchemy psycopg2                                                                     19.8s
+ => [4/5] WORKDIR /app                                                                                                   0.0s
+ => [5/5] COPY ingest_data.py ingest_data.py                                                                             0.0s
+ => exporting to image                                                                                                   1.2s
+ => => exporting layers                                                                                                  1.2s
+ => => writing image sha256:36e2cced49ada093a567fc68ea4337fa5cd012a96488cecbaafabb7ea8fc4647                             0.0s
+ => => naming to docker.io/library/taxi_ingest:v001
+```
 
-Then, we execute the following command:
+Then, we execute the following command, which references the shared network and the PostgreSQL database
 
 ``` bash
 $ URL="https://github.com/DataTalksClub/nyc-tlc-data/releases/download/yellow/yellow_tripdata_2021-01.csv.gz"
@@ -1093,37 +1175,20 @@ $ docker run -it \
       --url=${URL}
 ```
 
-- We should run this thing in the network, and not on the localhost.
-
-- Who need also to use `pd-database`.
-
-![s12](dtc/s12.png)
-
-On peut lancer cette requête SQL dans pgAdmin pour vérifier si la table est complète.
+Check via pgadmin or pgcli that the table has been created
 
 ``` sql
 SELECT COUNT(1) FROM yellow_taxi_trips;
 -- 1369765
 ```
 
-<div class="note">
-
 Remember that we list the containers with the command `docker ps` and stop containers with the command
 `docker kill <CONTAINER_ID>`.
 
-</div>
-
-<div class="note">
-
-**15:15 HTTP server + ipconfig**
 We also mention the possibility of creating your own http server with the commands `python3 -m http.server` and
 `ifconfig` (`ipconfig` on windows) then change the URL to search for the source file on our own machine.
 
-</div>
-
 ### Running Postgres and pgAdmin with Docker-Compose
-
-> 2023-01-20.
 
 See [DE Zoomcamp 1.2.5 - Running Postgres and pgAdmin with Docker-Compose](https://www.youtube.com/watch?v=hKI6PkPhpa0)
 on Youtube.
@@ -1143,16 +1208,12 @@ Normally, Docker compose is already installed since it is included in Docker Des
 
 #### 01:56 Configuration of postgres database and pgadmin in Docker-Compose file
 
-With Docker compose, the images will be installed automatically in the same network.
+With Docker compose, *the images will be installed automatically in the same network.*
 
 See
 [docker-compose.yaml](https://github.com/DataTalksClub/data-engineering-zoomcamp/blob/main/week_1_basics_n_setup/2_docker_sql/docker-compose.yaml).
 
-<div class="formalpara-title">
-
 **File `docker-compose.yaml`**
-
-</div>
 
 ``` yaml
 services:
@@ -1177,9 +1238,12 @@ services:
 
 #### 05:51 Running the Docker-Compose file
 
-we need to stop the current running containers **pgadmin** et **postgres**.
+First, stop the current running containers **pgadmin** and **postgres**.
 
-![s13](dtc/s13.png)
+``` bash
+$ docker ps -a
+$ docker kill [container id|container name]
+```
 
 Then run this command:
 
@@ -1219,8 +1283,6 @@ To stop a running container in detached mode, we can use the same command `$ doc
 
 ### SQL Refresher
 
-> 2023-01-20.
-
 See [DE Zoomcamp 1.2.6 - SQL Refreshser](https://www.youtube.com/watch?v=QEcps_iskgg).
 
 We refer to the file located here [Taxi Zone Lookup
@@ -1228,6 +1290,12 @@ Table](https://d37ci6vzurychx.cloudfront.net/misc/taxi+_zone_lookup.csv) that I 
 **zones**.
 
 We need to restart in detached mode, with the command `$ docker-compose up -d`.
+
+Start your virtual environment along with a notebook
+
+``` bash
+$ jupyter notebook --no-browser </dev/null &>/dev/null & disown
+```
 
 After that, here bellow the python code I am running in jupyter notebook.
 
@@ -1250,7 +1318,7 @@ df.to_sql(name='zones', con=engine, if_exists='replace')
 
 Let’s check in pgAdmin if the **zones** table is loaded.
 
-![s36](dtc/s36.png)
+![s56](images/w7s56.png)
 
 Then I run the code below in pgAdmin to cross the tables.
 
@@ -1315,15 +1383,11 @@ We should take some time to revise `JOIN`, `LEFT JOIN`, `RIGHT JOIN`, `OUTER JOI
 
 We talk also of `DATE_TRUNC`, `CAST`…​
 
-<div class="formalpara-title">
-
 **Example 1**
-
-</div>
 
 ``` sql
 SELECT
--- DATE_TRUNC('DAY', tpep_dropoff_datetime) as "day",
+  --DATE_TRUNC('DAY', tpep_dropoff_datetime) as "day",
   CAST(tpep_dropoff_datetime AS DATE) as "day",
   COUNT(1) as "count",
   MAX(total_amount)
@@ -1334,15 +1398,7 @@ GROUP BY
 ORDER BY "count" DESC;
 ```
 
-- Remove time explicitly.
-
-- Remove time but by casting on date type.
-
-<div class="formalpara-title">
-
 **Example 2**
-
-</div>
 
 ``` sql
 SELECT
@@ -1359,8 +1415,6 @@ ORDER BY "count" ASC;
 
 ### Port Mapping and Networks in Docker (Bonus)
 
-> 2023-01-20.
-
 See [DE Zoomcamp 1.4.2 - Port Mapping and Networks in Docker (Bonus)](https://www.youtube.com/watch?v=tOr4hTsHOzU).
 
 * Docker networks
@@ -1369,8 +1423,6 @@ See [DE Zoomcamp 1.4.2 - Port Mapping and Networks in Docker (Bonus)](https://ww
 * `.dockerignore` file
 
 ![s28](dtc/s28.png)
-
-<div class="formalpara-title">
 
 **File `docker-compose.yaml`**
 
@@ -1397,8 +1449,6 @@ services:
       - "8080:80"
 ```
 
-<div class="formalpara-title">
-
 **Localhost computer side**
 
 </div>
@@ -1409,11 +1459,7 @@ $ pgcli -h localhost -p 5431 -U root -d ny_taxi
 
 Then, we execute the following command:
 
-<div class="formalpara-title">
-
 **Network side**
-
-</div>
 
 ``` bash
 $ URL="https://github.com/DataTalksClub/nyc-tlc-data/releases/download/yellow/yellow_tripdata_2021-01.csv.gz"
@@ -1437,8 +1483,6 @@ The code is
 [here](https://github.com/DataTalksClub/data-engineering-zoomcamp/tree/main/week_1_basics_n_setup/1_terraform_gcp).
 
 ### Introduction to Google Cloud Platform
-
-> 2023-01-20.
 
 See [DE Zoomcamp 1.1.1 - Introduction to Google Cloud Platform](https://www.youtube.com/watch?v=18jIzE41fJ4) on Youtube.
 
