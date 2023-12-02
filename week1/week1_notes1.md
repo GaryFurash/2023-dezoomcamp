@@ -1517,6 +1517,8 @@ on GitHub.
   * Very useful for stack-based deployments, and with cloud providers such as AWS, GCP, Azure, K8S.
   * State-based approach to track resource changes throughout deployments.
 
+### Installing Terraform
+
 See [Install Terraform](https://developer.hashicorp.com/terraform/downloads) and [Install Terraform
 CLI](https://developer.hashicorp.com/terraform/tutorials/gcp-get-started/install-cli).
 
@@ -1539,10 +1541,11 @@ $ sudo rm -rf /usr/bin/terraform
 # find the distribution you want on https://releases.hashicorp.com/terraform/
 $ wget https://releases.hashicorp.com/terraform/1.6.5/terraform_1.6.5_linux_amd64.zip /tmp/
 $ unzip /tmp/terraform_1.6.5_linux_amd64.zip
+# Terraform suggests installing to `/usr/local/bin/terraform`.
 $ sudo mv terraform /usr/bin/
 ```
 
-If you decide to install manually, Terraform suggests installing to `/usr/local/bin/terraform`.
+## Setting up google cloud and gcp 
 
 Go to the [Google Cloud Console](https://console.cloud.google.com/welcome).
 
@@ -1576,7 +1579,6 @@ My location
 $ export GOOGLE_APPLICATION_CREDENTIALS=~/.google/credentials/google_credentials.json
 ```
 
-
 Download [Gougle Cloud CLI](https://cloud.google.com/sdk/docs/install-sdk) for local setup.
 
 I downloaded the file `google-cloud-cli-412.0.0-darwin-arm.tar.gz`, unzipped this file and moved the directory in
@@ -1585,8 +1587,6 @@ I downloaded the file `google-cloud-cli-412.0.0-darwin-arm.tar.gz`, unzipped thi
 ``` bash
 ./google-cloud-sdk/install.sh
 ```
-
-Voici ce qu’il est apparu dans le terminal
 
 ``` txt
 Your current Google Cloud CLI version is: 412.0.0
@@ -1637,7 +1637,7 @@ The latest available version is: 412.0.0
 To install or remove components at your current SDK version [412.0.0], run:
   $ gcloud components install COMPONENT_ID
   $ gcloud components remove COMPONENT_ID
-
+  
 To update your SDK installation to the latest version [412.0.0], run:
   $ gcloud components update
 
