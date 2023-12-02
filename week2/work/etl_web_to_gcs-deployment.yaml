@@ -1,0 +1,37 @@
+###
+### A complete description of a Prefect Deployment for flow 'etl_web_to_gcs'
+###
+name: Homework 2
+description: The main ETL function
+version: 692daa460cb813a4f49c1829bd0e1de3
+# The work queue that will handle this deployment's runs
+work_queue_name: default
+tags: []
+parameters: {}
+schedule: null
+infra_overrides: {}
+infrastructure:
+  type: process
+  env: {}
+  labels: {}
+  name: null
+  command: null
+  stream_output: true
+  working_dir: null
+  block_type_slug: process
+  _block_type_slug: process
+
+###
+### DO NOT EDIT BELOW THIS LINE
+###
+flow_name: etl_web_to_gcs
+manifest_path: null
+storage: null
+path: /home/garyf/repos/2023-dezoomcamp/week2/work
+entrypoint: homework_1.py:etl_web_to_gcs
+parameter_openapi_schema:
+  title: Parameters
+  type: object
+  properties: {}
+  required: null
+  definitions: null

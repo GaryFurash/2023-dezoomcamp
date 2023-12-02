@@ -1,0 +1,57 @@
+[0m17:21:39.164521 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7fd569401b40>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7fd567d58130>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7fd567d580a0>]}
+
+
+============================== 17:21:39.168511 | 41d275e8-e7fa-4d7d-976e-e9c4b0aad444 ==============================
+[0m17:21:39.168511 [info ] [MainThread]: Running with dbt=1.5.1
+[0m17:21:39.169143 [debug] [MainThread]: running dbt with arguments {'printer_width': '80', 'indirect_selection': 'eager', 'write_json': 'True', 'log_cache_events': 'False', 'partial_parse': 'True', 'cache_selected_only': 'False', 'profiles_dir': '/home/garyf/repos/2023-dezoomcamp/week4/homework/docker_setup', 'fail_fast': 'False', 'version_check': 'True', 'log_path': 'logs', 'debug': 'False', 'warn_error': 'None', 'use_colors': 'True', 'use_experimental_parser': 'False', 'no_print': 'None', 'quiet': 'False', 'log_format': 'default', 'introspect': 'True', 'static_parser': 'True', 'warn_error_options': 'WarnErrorOptions(include=[], exclude=[])', 'target_path': 'None', 'send_anonymous_usage_stats': 'True'}
+[0m17:21:39.170613 [info ] [MainThread]: dbt version: 1.5.1
+[0m17:21:39.171057 [info ] [MainThread]: python version: 3.10.6
+[0m17:21:39.171429 [info ] [MainThread]: python path: /home/garyf/repos/2023-dezoomcamp/.venv_dbt/bin/python3
+[0m17:21:39.171826 [info ] [MainThread]: os info: Linux-5.15.90.1-microsoft-standard-WSL2-x86_64-with-glibc2.35
+[0m17:21:39.172225 [info ] [MainThread]: Using profiles.yml file at /home/garyf/repos/2023-dezoomcamp/week4/homework/docker_setup/profiles.yml
+[0m17:21:39.172616 [info ] [MainThread]: Using dbt_project.yml file at /home/garyf/repos/2023-dezoomcamp/week4/homework/docker_setup/dbt_project.yml
+[0m17:21:39.173053 [info ] [MainThread]: Configuration:
+[0m17:21:39.541961 [info ] [MainThread]:   profiles.yml file [[32mOK found and valid[0m]
+[0m17:21:39.542465 [info ] [MainThread]:   dbt_project.yml file [[31mERROR not found[0m]
+[0m17:21:39.542880 [info ] [MainThread]: Required dependencies:
+[0m17:21:39.543260 [debug] [MainThread]: Executing "git --help"
+[0m17:21:39.544533 [debug] [MainThread]: STDOUT: "b"usage: git [--version] [--help] [-C <path>] [-c <name>=<value>]\n           [--exec-path[=<path>]] [--html-path] [--man-path] [--info-path]\n           [-p | --paginate | -P | --no-pager] [--no-replace-objects] [--bare]\n           [--git-dir=<path>] [--work-tree=<path>] [--namespace=<name>]\n           [--super-prefix=<path>] [--config-env=<name>=<envvar>]\n           <command> [<args>]\n\nThese are common Git commands used in various situations:\n\nstart a working area (see also: git help tutorial)\n   clone     Clone a repository into a new directory\n   init      Create an empty Git repository or reinitialize an existing one\n\nwork on the current change (see also: git help everyday)\n   add       Add file contents to the index\n   mv        Move or rename a file, a directory, or a symlink\n   restore   Restore working tree files\n   rm        Remove files from the working tree and from the index\n\nexamine the history and state (see also: git help revisions)\n   bisect    Use binary search to find the commit that introduced a bug\n   diff      Show changes between commits, commit and working tree, etc\n   grep      Print lines matching a pattern\n   log       Show commit logs\n   show      Show various types of objects\n   status    Show the working tree status\n\ngrow, mark and tweak your common history\n   branch    List, create, or delete branches\n   commit    Record changes to the repository\n   merge     Join two or more development histories together\n   rebase    Reapply commits on top of another base tip\n   reset     Reset current HEAD to the specified state\n   switch    Switch branches\n   tag       Create, list, delete or verify a tag object signed with GPG\n\ncollaborate (see also: git help workflows)\n   fetch     Download objects and refs from another repository\n   pull      Fetch from and integrate with another repository or a local branch\n   push      Update remote refs along with associated objects\n\n'git help -a' and 'git help -g' list available subcommands and some\nconcept guides. See 'git help <command>' or 'git help <concept>'\nto read about a specific subcommand or concept.\nSee 'git help git' for an overview of the system.\n""
+[0m17:21:39.544927 [debug] [MainThread]: STDERR: "b''"
+[0m17:21:39.545208 [info ] [MainThread]:  - git [[32mOK found[0m]
+
+[0m17:21:39.545664 [info ] [MainThread]: Connection:
+[0m17:21:39.546081 [info ] [MainThread]:   method: service-account
+[0m17:21:39.546449 [info ] [MainThread]:   database: polar-column-380322
+[0m17:21:39.546822 [info ] [MainThread]:   schema: polar-column-380322.dezoomcamp
+[0m17:21:39.547317 [info ] [MainThread]:   location: US
+[0m17:21:39.547698 [info ] [MainThread]:   priority: interactive
+[0m17:21:39.548213 [info ] [MainThread]:   timeout_seconds: 300
+[0m17:21:39.548619 [info ] [MainThread]:   maximum_bytes_billed: None
+[0m17:21:39.548995 [info ] [MainThread]:   execution_project: polar-column-380322
+[0m17:21:39.549375 [info ] [MainThread]:   job_retry_deadline_seconds: None
+[0m17:21:39.549737 [info ] [MainThread]:   job_retries: 1
+[0m17:21:39.550183 [info ] [MainThread]:   job_creation_timeout_seconds: None
+[0m17:21:39.550643 [info ] [MainThread]:   job_execution_timeout_seconds: 300
+[0m17:21:39.551022 [info ] [MainThread]:   gcs_bucket: None
+[0m17:21:39.551618 [debug] [MainThread]: Acquiring new bigquery connection 'debug'
+[0m17:21:39.551916 [debug] [MainThread]: Opening a new connection, currently in state init
+[0m17:21:39.552268 [debug] [MainThread]: BigQuery adapter: Got an error when attempting to create a bigquery client: '[Errno 2] No such file or directory: '/.google/credentials/google_credentials.json''
+[0m17:21:39.552618 [info ] [MainThread]:   Connection test: [[31mERROR[0m]
+
+[0m17:21:39.553013 [info ] [MainThread]: [31m2 checks failed:[0m
+[0m17:21:39.553393 [info ] [MainThread]: Could not load dbt_project.yml
+
+[0m17:21:39.553768 [info ] [MainThread]: dbt was unable to connect to the specified database.
+The database returned the following error:
+
+  >Database Error
+  [Errno 2] No such file or directory: '/.google/credentials/google_credentials.json'
+
+Check your database credentials and try again. For more information, visit:
+https://docs.getdbt.com/docs/configure-your-profile
+
+
+[0m17:21:39.554362 [debug] [MainThread]: Command `dbt debug` failed at 17:21:39.554255 after 0.40 seconds
+[0m17:21:39.554665 [debug] [MainThread]: Connection 'debug' was properly closed.
+[0m17:21:39.554974 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7fd569401b40>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7fd56656ae90>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7fd56656b790>]}
+[0m17:21:39.555323 [debug] [MainThread]: Flushing usage events

@@ -1501,7 +1501,7 @@ on GitHub.
 
 * What is Terraform?
   * [Terraform](https://www.terraform.io/) is a tool for build, change, and destroy infrastructure.
-  * Ppen-source tool by HashiCorp, used for provisioning infrastructure resources.
+  * open-source tool by HashiCorp, used for provisioning infrastructure resources.
   * Supports DevOps best practices for change management.
   * Managing configuration files in source control to maintain an ideal provisioning state for testing and production
     environments.
@@ -1520,23 +1520,29 @@ on GitHub.
 See [Install Terraform](https://developer.hashicorp.com/terraform/downloads) and [Install Terraform
 CLI](https://developer.hashicorp.com/terraform/tutorials/gcp-get-started/install-cli).
 
+To Install on Ubuntu
+
 ``` bash
-$ brew tap hashicorp/tap
-$ brew install hashicorp/tap/terraform
+$ wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+$ echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+$ sudo apt update && sudo apt install terraform
 $ terraform -help
 $ terraform --version
-# Terraform v1.3.7
-# on darwin_arm64
+```
+
+To Update on Ubuntu
+``` bash
+# find the location of the binary
+$ which terraform
+# remove the binary
+$ sudo rm -rf /usr/bin/terraform
+# find the distribution you want on https://releases.hashicorp.com/terraform/
+$ wget https://releases.hashicorp.com/terraform/1.6.5/terraform_1.6.5_linux_amd64.zip /tmp/
+$ unzip /tmp/terraform_1.6.5_linux_amd64.zip
+$ sudo mv terraform /usr/bin/
 ```
 
 If you decide to install manually, Terraform suggests installing to `/usr/local/bin/terraform`.
-
-On January 5, 2023, I opened my free GCP account with \$300 credit to spend within 90 days.
-
-I was asked for my credit card. But it was clearly indicated :
-**No autocharge after free trial ends**
-We ask you for your credit card to make sure you are not a robot. You won’t be charged unless you manually upgrade to a
-paid account.
 
 Go to the [Google Cloud Console](https://console.cloud.google.com/welcome).
 
@@ -1563,6 +1569,13 @@ Right under **Actions**, select **Manage keys**. Then under the **ADD KEY** butt
 **JSON** as key type.
 
 Save the private key `hopeful-summer-375416-e9bf81ca5686.json` to your computer (like here `~/opt/gcp/`).
+
+My location
+
+``` bash
+$ export GOOGLE_APPLICATION_CREDENTIALS=~/.google/credentials/google_credentials.json
+```
+
 
 Download [Gougle Cloud CLI](https://cloud.google.com/sdk/docs/install-sdk) for local setup.
 
