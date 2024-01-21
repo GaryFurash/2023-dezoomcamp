@@ -20,6 +20,8 @@
   - [GCP + Terraform](#gcp--terraform)
     - [Introduction to Google Cloud Platform](#introduction-to-google-cloud-platform)
     - [Introduction to Terraform Concepts \& GCP Pre-Requisites](#introduction-to-terraform-concepts--gcp-pre-requisites)
+    - [Installing Terraform](#installing-terraform)
+  - [Setting up google cloud and gcp](#setting-up-google-cloud-and-gcp)
     - [Workshop: Creating GCP Infrastructure with Terraform](#workshop-creating-gcp-infrastructure-with-terraform)
     - [Setting up the environment on cloud VM](#setting-up-the-environment-on-cloud-vm)
       - [01:05 Generate ssh keys](#0105-generate-ssh-keys)
@@ -64,6 +66,10 @@ See [README.md](https://github.com/DataTalksClub/data-engineering-zoomcamp/blob/
 ## Docker + Postgres
 
 ### Introduction to Docker
+
+**Why Docker**
+* Reproductibility (local vs target)
+* Integration Tests (CI/CD)
 
 See [DE Zoomcamp 1.2.1 - Introduction to Docker](https://www.youtube.com/watch?v=EYNwNlOrpr0).
 
@@ -307,6 +313,8 @@ ENTRYPOINT [ "python", "pipeline.py" ]
 ```
 
 Then, let’s restart the `build` and the `run`.
+
+Pass parameters after the docker command separated by space
 
 ``` bash
 $ docker build -t test:pandas .
@@ -1545,7 +1553,7 @@ $ unzip /tmp/terraform_1.6.5_linux_amd64.zip
 $ sudo mv terraform /usr/bin/
 ```
 
-## Setting up google cloud and gcp 
+## Setting up google cloud and gcp
 
 Go to the [Google Cloud Console](https://console.cloud.google.com/welcome).
 
@@ -1637,7 +1645,7 @@ The latest available version is: 412.0.0
 To install or remove components at your current SDK version [412.0.0], run:
   $ gcloud components install COMPONENT_ID
   $ gcloud components remove COMPONENT_ID
-  
+
 To update your SDK installation to the latest version [412.0.0], run:
   $ gcloud components update
 
